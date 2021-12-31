@@ -17,7 +17,7 @@
   "engines": {
     "node": ">= 16.0.0"
   },
-  "author": "kurstch <kurstch@gmail.com>",
+  "author": "kurstch <kurstch@protonmail.com>",
   "license": "GPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/Kurstch/discord-botly/issues"
