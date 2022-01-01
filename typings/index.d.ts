@@ -24,6 +24,10 @@ export interface InitArgs {
      * Absolute path to the slash command interaction file directory
      */
     commandsDir?: string;
+    /**
+     * Absolute path to the button interaction file directory
+     */
+    buttonsDir?: string;
 }
 
 export interface Command {

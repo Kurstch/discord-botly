@@ -46,3 +46,38 @@ module.exports.execute = function(interaction) {
     interaction.reply('bar!');
 }
 ```
+
+## Button Interactions
+
+To add a handler for a button interaction,
+pass `buttonsDir` to `botly.init`
+and add a file in that directory.
+
+The file should have one function as the default export.
+
+The filename should match the buttons customId.
+For example:
+If you have a button with `delete-channel` as the customId,
+the filename should be `delete-channel.js`.
+
+```js
+// ./buttons/delete-channel.js
+
+module.exports = function(interaction) {
+    interaction.channel.delete();
+}
+```
+
+The filename can also include dynamic parameters.
+For example: If you have a button with `delete-channel-926498635263814696` as the customId,
+the filename should be `delete-channel-[channelId].js`.
+All dynamic parameters will be passed to the exported function as the second parameter as `{parameterName: parameterValue}`.
+
+```js
+// ./button/delete-channel-[channelId].js
+
+module.exports = function(interaction, params) {
+    const channel = interaction.guild.channels.cache.get(params.channelId);
+    channel.delete()
+}
+```
