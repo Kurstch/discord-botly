@@ -22,7 +22,7 @@ export default async function initCommands(client: Client, commandsDir: string) 
             errors.push(`${file} execute must be a function`);
             continue;
         }
-        commands.set(file.split('.js')[0], command);
+        commands.set(command.data.name, command);
         successes++;
     }
 
