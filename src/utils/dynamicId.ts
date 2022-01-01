@@ -8,15 +8,20 @@ export function hasDynamicParams(id: string): boolean {
  * Checks the provided id against all registered ids.
  */
 export function isRegisteredId(registeredIds: RegisteredId[], id: string): {
-    result: boolean,
+    result: true,
     params?: { [key: string]: string; };
-} {
+    execute: RegisteredId['execute'];
+} | { result: false; } {
     // The id is found directly in registeredIds,
     // which means that it has no dynamic parameters
     // and is valid, so return true.
-    if (registeredIds.some(registeredId => registeredId.id === id)) return { result: true };
+    const registeredId = registeredIds.find(registeredId => registeredId.id === id);
+    if (registeredId) return {
+        result: true,
+        execute: registeredId.execute
+    };
 
-    for (const { params, regexp } of registeredIds) {
+    for (const { params, regexp, execute } of registeredIds) {
         if (!regexp || !params) continue;
         if (!regexp.test(id)) continue;
 
@@ -27,7 +32,7 @@ export function isRegisteredId(registeredIds: RegisteredId[], id: string): {
             values[param] = match![params.indexOf(param) + 1];
         }
 
-        return { result: true, params: values };
+        return { result: true, params: values, execute };
     }
 
     return { result: false };
@@ -41,9 +46,9 @@ export function isRegisteredId(registeredIds: RegisteredId[], id: string): {
  *
  * If multiple parameters have the same name, returns an Error
  */
-export function registerId(id: string): Error | RegisteredId {
+export function registerId(id: string, execute: RegisteredId['execute']): Error | RegisteredId {
     if (!hasDynamicParams(id)) {
-        return { id, params: null, regexp: null };
+        return { id, params: null, regexp: null, execute };
     }
 
     const regexp = new RegExp('^' + id.replace(/\[.+?\]/g, `(.+)`));
@@ -54,5 +59,5 @@ export function registerId(id: string): Error | RegisteredId {
     if (params && new Set(params).size !== params.length)
         return new Error('every parameter must be unique');
 
-    return { id, params, regexp };
+    return { id, params, regexp, execute };
 };

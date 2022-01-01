@@ -1,4 +1,4 @@
-import type { Client, CommandInteraction } from 'discord.js';
+import type { ButtonInteraction, Client, CommandInteraction } from 'discord.js';
 
 /**
  * Initializes botly
@@ -49,4 +49,5 @@ export interface RegisteredId {
     id: string;
     params: RegExpMatchArray | null;
     regexp: RegExp | null;
+    execute(interaction: ButtonInteraction, params?: { [key: string]: string; }): void;
 }
