@@ -30,3 +30,23 @@ export interface Command {
     data: any,
     execute(interaction: CommandInteraction): Promise<any>
 }
+
+/**
+ * A registered button/selectMenu customId.
+ *
+ * If the id has dynamic parameters
+ * (ie. `channel-[id]-delete`),
+ * then the regexp is a unique regular expression that matches this exact id
+ * and params is an array which includes the names of the parameters
+ * 
+ * @example {
+ *     id: 'channel-[channelId]-delete',
+ *     params: ['channelId'],
+ *     regexp: /^channel-(.+)-delete/
+ * }
+ */
+export interface RegisteredId {
+    id: string;
+    params: RegExpMatchArray | null;
+    regexp: RegExp | null;
+}
