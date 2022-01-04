@@ -31,7 +31,7 @@ A project using discord-botly may look something like this.
 |   |-channel-delete.js
 |   └─channel-[id]-delete.js
 |-selectMenus
-|   └─poll-[id]-options[index]
+|   └─poll-[id]-options-[index].ts
 |-index.js
 |-.env
 └─package.json
@@ -157,10 +157,10 @@ discord-botly interprets the filename as the customId.
 It can be a static Id like `channel-delete.js`.
 
 However sometimes you may want to include dynamic properties in the customId.
-For example you may want to the button point to a specific channel - `channel-926498632463814696-delete`.
+For example you may want a button point to a specific channel like `channel-926498632463814696-delete`.
 
 For these cases discord-botly offers dynamic ids.
-The syntax is very simple: wrap the name of the property in "[]".
+The syntax is very simple: wrap the name of the property in `[]`.
 
 Examples:
 
