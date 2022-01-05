@@ -149,6 +149,33 @@ module.exports = function(interaction, params) {
 }
 ```
 
+### Select Menu Interactions
+
+To add a select menu interaction,
+add a file in the `selectMenuDir` directory.
+
+The file should have one function as the default export.
+
+The filename is interpreted as the ButtonInteractions customId,
+the id can be static or dynamic (see [Dynamic Ids](#dynamic-ids))
+
+```js
+// ./selectMenus/give-role.js
+
+module.exports = function(interaction) {
+    interaction.member.roles.add(interaction.values[0]);
+}
+```
+
+```js
+// ./selectMenus/give-[memberId]-role.js
+
+module.exports = function(interaction, params) {
+    interaction.guild.members.fetch(params.memberId)
+        .then(member => member.roles.add(interaction.values[0]))
+}
+```
+
 ## Dynamic Ids
 
 When adding a button or select menu interaction to the project,

@@ -1,4 +1,4 @@
-import type { ButtonInteraction, Client, CommandInteraction } from 'discord.js';
+import type { ButtonInteraction, Client, CommandInteraction, SelectMenuInteraction } from 'discord.js';
 
 /**
  * Initializes botly
@@ -28,6 +28,10 @@ export interface InitArgs {
      * Absolute path to the button interaction file directory
      */
     buttonsDir?: string;
+    /**
+     * Absolute path to the selectMenu interaction file directory
+     */
+    selectMenuDir?: string;
 }
 
 export interface Command {
@@ -53,5 +57,5 @@ export interface RegisteredId {
     id: string;
     params: RegExpMatchArray | null;
     regexp: RegExp | null;
-    execute(interaction: ButtonInteraction, params?: { [key: string]: string; }): void;
+    execute(interaction: ButtonInteraction | SelectMenuInteraction, params?: { [key: string]: string; }): void;
 }
