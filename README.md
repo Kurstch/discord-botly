@@ -31,7 +31,7 @@ A project using discord-botly may look something like this.
 |   |-channel-delete.js
 |   └─channel-[id]-delete.js
 |-selectMenus
-|   └─poll-[id]-options-[index].ts
+|   └─poll-[id]-options-[index].js
 |-index.js
 |-.env
 └─package.json
@@ -46,7 +46,7 @@ Discord botly has one exposed `init` function which takes the following argument
 - (optional) commandsDir: the absolute path to the slash commands directory
 - (optional) buttonsDir: the absolute path to the button interactions directory
 
-> Note: SelectMenuInteraction and MessageReaction handlers are not yet implemented.
+> Note: MessageReaction handler is not yet implemented.
 
 ```js
 // index.js
@@ -73,7 +73,8 @@ botly.init({
     client,
     eventsDir: path.join(__dirname, './events'),
     commandsDir: path.join(__dirname, './commands'),
-    buttonsDir: path.join(__dirname, './buttons')
+    buttonsDir: path.join(__dirname, './buttons'),
+    selectMenuDir: path.join(__dirname, './selectMenus')
 });
 
 client.login(process.env.TOKEN);
