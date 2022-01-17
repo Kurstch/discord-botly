@@ -10,6 +10,7 @@ A simple Discord bot framework which aims to bring easy to understand architectu
   - [Initialization](#initialization)
   - [Events](#events)
   - [Slash Commands](#slash-commands)
+    - [Registering Slash Commands](#registering-slash-commands)
   - [Button Interactions](#button-interactions)
 - [Dynamic Ids](#dynamic-ids)
 - [Typescript](#typescript)
@@ -122,6 +123,24 @@ module.exports.commandData = new SlashCommandBuilder()
 module.exports.execute = function(interaction) {
     interaction.reply('bar!');
 }
+```
+
+#### Registering Slash Commands
+
+To register slash commands with Discord,
+botly has an exported function called `registerGlobalSlashCommands`.
+The function takes a logged in Discord.Client as a parameter,
+so it has to be run after the client has logged in (ie. on the `ready` event).
+
+```js
+// ./events/ready.js
+
+const { registerGlobalSlashCommands } = require('discord-botly');
+
+module.exports.execute = function(client) {
+    registerGlobalSlashCommands(client)
+}
+
 ```
 
 ### Button Interactions
