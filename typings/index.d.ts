@@ -36,9 +36,9 @@ export interface InitArgs {
 }
 
 export type ModuleTypes = SelectMenuInteraction | ButtonInteraction | CommandInteraction | keyof ClientEvents;
-declare function CommandCallback(interaction: CommandInteraction): void;
-declare function EventCallback<T extends keyof ClientEvents>(...args: ClientEvents[T]): void;
-declare function SelectMenuOrButtonCallback<T extends SelectMenuInteraction | ButtonInteraction>(Interaction: T, params: { [key: string]: string; }): void;
+export type CommandCallback = (interaction: CommandInteraction) => void;
+export type EventCallback<T extends keyof ClientEvents> = (...args: ClientEvents[T]) => void;
+export type SelectMenuOrButtonCallback<T extends SelectMenuInteraction | ButtonInteraction> = (Interaction: T, params: { [key: string]: string; }) => void;
 
 /**
  * Module code structure
