@@ -1,10 +1,11 @@
+import { Collection } from '@discordjs/collection';
 import path from 'path';
 import fs from 'fs';
-import type { Client } from "discord.js";
-import type { RegisteredId } from '../typings';
+import type { Client, SelectMenuInteraction } from "discord.js";
+import type { ModuleData, BotlyModule } from '../typings';
 import { isRegisteredId, registerId } from './utils/dynamicId';
 
-const registeredIds: RegisteredId[] = [];
+const selectMenuInteractions: Collection<string, ModuleData<SelectMenuInteraction>> = new Collection()
 
 export default function initSelectMenuInteractions(client: Client, selectMenuDir: string) {
     const selectMenuFiles = fs.readdirSync(selectMenuDir).filter(file => file.endsWith('.js'));
@@ -16,17 +17,17 @@ export default function initSelectMenuInteractions(client: Client, selectMenuDir
     console.group('\nRegistering select menu interactions:');
 
     for (const file of selectMenuFiles) {
-        const selectMenu = require(path.join(selectMenuDir, file));
-        if (typeof selectMenu.default !== 'function') {
-            errors.push(`${file} default export must be a function`);
+        const selectMenu = require(path.join(selectMenuDir, file)) as BotlyModule<SelectMenuInteraction>;
+        if (typeof selectMenu.execute !== 'function') {
+            errors.push(`${file} exports.execute must be a function`);
             continue;
         }
-        const res = registerId(file.split('.js')[0], selectMenu.default);
+        const res = registerId(file.split('.js')[0]);
         if (res instanceof Error) {
             errors.push(`${file}: ${res.message}`);
             continue;
         }
-        registeredIds.push(res, selectMenu);
+        selectMenuInteractions.set(file, { ...selectMenu, ...res })
         successes++;
     }
 
@@ -40,8 +41,10 @@ export default function initSelectMenuInteractions(client: Client, selectMenuDir
 
     client.on('interactionCreate', interaction => {
         if (!interaction.isSelectMenu()) return;
-        const res = isRegisteredId(registeredIds, interaction.customId);
-        if (!res.result) return;
-        res.execute(interaction, res.params);
+        selectMenuInteractions.forEach(selectMenu => {
+            const res = isRegisteredId(selectMenu, interaction.customId);
+            if (!res.result) return;
+            selectMenu.execute(interaction, res.params);
+        })
     });
 }

@@ -1,4 +1,4 @@
-import type { RegisteredId } from "../../typings";
+import type { IdStore } from "../../typings";
 
 export function hasDynamicParams(id: string): boolean {
     return !!id.match(/\[.+?\]/g)?.length;
@@ -7,48 +7,39 @@ export function hasDynamicParams(id: string): boolean {
 /**
  * Checks the provided id against all registered ids.
  */
-export function isRegisteredId(registeredIds: RegisteredId[], id: string): {
+export function isRegisteredId(idData: IdStore, id: string): {
     result: true,
-    params?: { [key: string]: string; };
-    execute: RegisteredId['execute'];
+    params: { [key: string]: string; };
 } | { result: false; } {
+    const { customId, params, regexp } = idData
+
     // The id is found directly in registeredIds,
     // which means that it has no dynamic parameters
     // and is valid, so return true.
-    const registeredId = registeredIds.find(registeredId => registeredId.id === id);
-    if (registeredId) return {
-        result: true,
-        execute: registeredId.execute
-    };
+    if (customId === id) return { result: true, params: {} };
+    if (!regexp || !params || !regexp.test(id)) return { result: false };
 
-    for (const { params, regexp, execute } of registeredIds) {
-        if (!regexp || !params) continue;
-        if (!regexp.test(id)) continue;
+    const match = regexp.exec(id);
+    const values: { [key: string]: string; } = {};
 
-        const match = regexp.exec(id);
-        const values: { [key: string]: string; } = {};
-
-        for (const param of params) {
-            values[param] = match![params.indexOf(param) + 1];
-        }
-
-        return { result: true, params: values, execute };
+    for (const param of params) {
+        values[param] = match![params.indexOf(param) + 1];
     }
 
-    return { result: false };
+    return { result: true, params: values };
 };
 
 /**
- * Parses the id and returns `RegisteredId`.
+ * Parses the id and returns `IdStore`.
  *
  * If id has dynamic parameters,
  * saves the parameter names and constructs a unique regexp for that id.
  *
  * If multiple parameters have the same name, returns an Error
  */
-export function registerId(id: string, execute: RegisteredId['execute']): Error | RegisteredId {
+export function registerId(id: string): Error | IdStore {
     if (!hasDynamicParams(id)) {
-        return { id, params: null, regexp: null, execute };
+        return { customId: id, params: null, regexp: null };
     }
 
     const regexp = new RegExp('^' + id.replace(/\[.+?\]/g, `(.+)`));
@@ -59,5 +50,5 @@ export function registerId(id: string, execute: RegisteredId['execute']): Error 
     if (params && new Set(params).size !== params.length)
         return new Error('every parameter must be unique');
 
-    return { id, params, regexp, execute };
+    return { customId: id, params, regexp };
 };

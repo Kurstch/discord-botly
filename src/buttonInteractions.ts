@@ -1,10 +1,11 @@
+import { Collection } from '@discordjs/collection';
 import path from 'path';
 import fs from 'fs';
-import type { Client } from 'discord.js';
-import type { RegisteredId } from '../typings';
+import type { ButtonInteraction, Client } from 'discord.js';
+import type { BotlyModule, ModuleData } from '../typings';
 import { isRegisteredId, registerId } from './utils/dynamicId';
 
-const registeredIds: RegisteredId[] = [];
+const buttonInteractions: Collection<string, ModuleData<ButtonInteraction>> = new Collection()
 
 export default function initButtonInteractions(client: Client, buttonsDir: string) {
     const buttonFiles = fs.readdirSync(buttonsDir).filter(file => file.endsWith('.js') && !file.endsWith('.map.js'));
@@ -16,17 +17,17 @@ export default function initButtonInteractions(client: Client, buttonsDir: strin
     console.group('\nRegistering button interactions:');
 
     for (const file of buttonFiles) {
-        const button = require(path.join(buttonsDir, file));
-        if (typeof button.default !== 'function') {
-            errors.push(`${file} default export must be a function`);
+        const button = require(path.join(buttonsDir, file)) as BotlyModule<ButtonInteraction>;
+        if (typeof button.execute !== 'function') {
+            errors.push(`${file} exports.execute must be a function`);
             continue;
         }
-        const res = registerId(file.split('.js')[0], button.default);
+        const res = registerId(file.split('.js')[0]);
         if (res instanceof Error) {
             errors.push(`${file}: ${res.message}`);
             continue;
         }
-        registeredIds.push(res, button);
+        buttonInteractions.set(file, { ...button, ...res })
         successes++;
     }
 
@@ -40,8 +41,10 @@ export default function initButtonInteractions(client: Client, buttonsDir: strin
 
     client.on('interactionCreate', interaction => {
         if (!interaction.isButton()) return;
-        const res = isRegisteredId(registeredIds, interaction.customId);
-        if (!res.result) return;
-        res.execute(interaction, res.params);
+        buttonInteractions.forEach(button => {
+            const res = isRegisteredId(button, interaction.customId);
+            if (!res.result) return;
+            button.execute(interaction, res.params);
+        })
     });
 }

@@ -1,11 +1,13 @@
-import { Client, Collection } from "discord.js";
+import { Collection } from "discord.js";
+import { SlashCommandBuilder } from '@discordjs/builders';
 import { Routes } from "discord-api-types/v9";
 import { REST } from "@discordjs/rest";
 import path from 'path';
 import fs from 'fs';
-import type { Command } from "../typings";
+import type { Client, CommandInteraction } from 'discord.js';
+import type { BotlyModule, ModuleData } from "../typings";
 
-const commands: Collection<string, Command> = new Collection();
+const commands: Collection<string, ModuleData<CommandInteraction>> = new Collection();
 
 export default async function initCommands(client: Client, commandsDir: string) {
     const commandFiles = fs.readdirSync(commandsDir).filter(file => file.endsWith('.js'));
@@ -17,12 +19,16 @@ export default async function initCommands(client: Client, commandsDir: string) 
     console.group('\nRegistering commands:');
 
     for (const file of commandFiles) {
-        const command = require(path.join(commandsDir, file)) as Command;
-        if (typeof command.execute !== 'function') {
-            errors.push(`${file} execute must be a function`);
+        const command = require(path.join(commandsDir, file)) as BotlyModule<CommandInteraction>;
+        if (!command.commandData || typeof command !== 'object') {
+            errors.push(`${file} exports.commandData must be a \`SlashCommandBuilder\` instance`);
             continue;
         }
-        commands.set(command.data.name, command);
+        if (typeof command.execute !== 'function') {
+            errors.push(`${file} exports.execute must be a function`);
+            continue;
+        }
+        commands.set(command.commandData.name, command);
         successes++;
     }
 
@@ -57,7 +63,7 @@ export async function registerGlobalSlashCommands(client: Client<true>) {
         for (const [_, guild] of client.guilds.cache) {
             await rest.put(
                 Routes.applicationGuildCommands(client.user.id, guild.id),
-                { body: [...commands.map(c => c.data.toJSON()).values()] }
+                { body: [...commands.map(c => c.commandData.toJSON()).values()] }
             );
         }
         console.info('Successfully registered all slash commands');

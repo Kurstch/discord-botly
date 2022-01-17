@@ -1,6 +1,7 @@
 import { Client } from "discord.js";
 import path from 'path';
 import fs from 'fs';
+import type { BotlyModule } from "../typings";
 
 export default function initEvents(client: Client, eventsDir: string) {
     const eventFiles = fs.readdirSync(eventsDir).filter(file => file.endsWith('.js'));
@@ -17,12 +18,12 @@ export default function initEvents(client: Client, eventsDir: string) {
     }
 
     for (const file of eventFiles) {
-        const func = require(path.join(eventsDir, file));
-        if (typeof func.default !== 'function') {
-            errors.push(`${file} default export must be a function`);
+        const func = require(path.join(eventsDir, file)) as BotlyModule<'ready'>;
+        if (typeof func.execute !== 'function') {
+            errors.push(`${file} exports.execute must be a function`);
             continue;
         }
-        client.on(file.split('.js')[0], func.default);
+        client.on(file.split('.js')[0], func.execute);
         successes++;
     }
 
