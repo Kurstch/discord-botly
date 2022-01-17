@@ -1,6 +1,6 @@
 # discord-botly
 
-A simple Discord bot framework which aims to bring easy to understand architecture for making discord bots.
+A simple Discord bot framework which aims to bring order and structure to Discord bot projects.
 
 [![NPM](https://nodei.co/npm/discord-botly.png)](https://nodei.co/npm/discord-botly/)
 
@@ -263,8 +263,8 @@ export const execute: BotlyModule<CommandInteraction>['execute'] = interaction =
 If needed, there are also typing for the execute commands:
 
 - `CommandCallback`
-- `EventCallback\<T extends keyof ClientEvents>`
-- `SelectMenuOrButtonCallback\<T extends SelectMenuInteraction | ButtonInteraction>`
+- `EventCallback<T extends keyof ClientEvents>`
+- `SelectMenuOrButtonCallback<T extends SelectMenuInteraction | ButtonInteraction>`
 
 ```ts
 // ./events/ready.ts
