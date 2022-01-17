@@ -1,4 +1,5 @@
-import type { ButtonInteraction, Client, CommandInteraction, SelectMenuInteraction } from 'discord.js';
+import type { ButtonInteraction, Client, ClientEvents, CommandInteraction, Interaction, SelectMenuInteraction } from 'discord.js';
+import type { SlashCommandBuilder } from '@discordjs/builders'
 
 /**
  * Initializes botly
@@ -34,10 +35,23 @@ export interface InitArgs {
     selectMenuDir?: string;
 }
 
-export interface Command {
-    data: any,
-    execute(interaction: CommandInteraction): Promise<any>
-}
+export type ModuleTypes = SelectMenuInteraction | ButtonInteraction | CommandInteraction | keyof ClientEvents;
+export type CommandCallback = (interaction: CommandInteraction) => void;
+export type EventCallback<T extends keyof ClientEvents> = (...args: ClientEvents[T]) => void;
+export type SelectMenuOrButtonCallback<T extends SelectMenuInteraction | ButtonInteraction> = (Interaction: T, params: { [key: string]: string; }) => void;
+
+/**
+ * Module code structure
+ */
+export type BotlyModule<T extends ModuleTypes> =
+    T extends SelectMenuInteraction | ButtonInteraction
+    ? { execute: SelectMenuOrButtonCallback<T>; }
+    : T extends CommandInteraction
+    ? {
+        commandData: SlashCommandBuilder;
+        execute: CommandCallback;
+    }
+    : { execute: EventCallback<T>; };
 
 /**
  * A registered button/selectMenu customId.
@@ -53,9 +67,16 @@ export interface Command {
  *     regexp: /^channel-(.+)-delete/
  * }
  */
-export interface RegisteredId {
-    id: string;
+export interface IdStore {
+    customId: string;
     params: RegExpMatchArray | null;
     regexp: RegExp | null;
-    execute(interaction: ButtonInteraction | SelectMenuInteraction, params?: { [key: string]: string; }): void;
 }
+
+/**
+ * Data for a registered module
+ */
+export type ModuleData<T extends ModuleTypes> =
+    T extends SelectMenuInteraction | ButtonInteraction
+    ? IdStore & BotlyModule<T>
+    : BotlyModule<T>;
