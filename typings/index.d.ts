@@ -37,21 +37,31 @@ export interface InitArgs {
 
 export type ModuleTypes = SelectMenuInteraction | ButtonInteraction | CommandInteraction | keyof ClientEvents;
 export type CommandCallback = (interaction: CommandInteraction) => void;
+export type CommandFilter = (interaction: CommandInteraction) => boolean | Promise<boolean>;
 export type EventCallback<T extends keyof ClientEvents> = (...args: ClientEvents[T]) => void;
+export type EventFilter<T extends keyof ClientEvents> = (...args: ClientEvents[T]) => boolean | Promise<boolean>;
 export type SelectMenuOrButtonCallback<T extends SelectMenuInteraction | ButtonInteraction> = (Interaction: T, params: { [key: string]: string; }) => void;
+export type SelectMenuOrButtonFilter<T extends SelectMenuInteraction | ButtonInteraction> = (Interaction: T, params: { [key: string]: string; }) => boolean | Promise<boolean>;
 
 /**
  * Module code structure
  */
 export type BotlyModule<T extends ModuleTypes> =
     T extends SelectMenuInteraction | ButtonInteraction
-    ? { execute: SelectMenuOrButtonCallback<T>; }
+    ? {
+        execute: SelectMenuOrButtonCallback<T>;
+        filter?: SelectMenuOrButtonFilter<T>;
+    }
     : T extends CommandInteraction
     ? {
         commandData: SlashCommandBuilder;
         execute: CommandCallback;
+        filter?: CommandFilter;
     }
-    : { execute: EventCallback<T>; };
+    : {
+        execute: EventCallback<T>;
+        filter?: EventFilter<T>;
+    };
 
 /**
  * A registered button/selectMenu customId.

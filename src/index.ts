@@ -20,24 +20,34 @@ export function init(args: InitArgs) {
         selectMenuStore = initModules<SelectMenuInteraction>('select menu interaction', args.selectMenuDir);
 
     // Add event listeners
-    for (const [fileName, event] of eventStore) {
-        args.client.on(fileName, event.execute);
+    for (let storedEvent of eventStore) {
+        // The line below may seem strange,
+        // but this is the only way I found to avoid
+        // `TS2590: Expression produces a union type that is too complex to represent`
+        // which drastically increases compile time
+        const event = storedEvent[1] as ModuleData<'ready'>;
+        args.client.on(storedEvent[0], async (...args) => {
+            //@ts-ignore
+            if (event.filter && !(await event.filter(...args))) return;
+            //@ts-ignore
+            event.execute(...args);
+        });
     }
-    args.client.on('interactionCreate', interaction => {
+    args.client.on('interactionCreate', async interaction => {
         if (interaction.isCommand()) {
             const command = commandStore.get(interaction.commandName);
-            if (!command) return;
+            if (!command || (command.filter && !(await command.filter(interaction)))) return;
             command.execute(interaction);
         } else if (interaction.isButton()) {
-            buttonStore.forEach(button => {
+            buttonStore.forEach(async button => {
                 const res = isRegisteredId(button, interaction.customId);
-                if (!res.result) return;
+                if (!res.result || (button.filter && !(await button.filter(interaction, res.params)))) return;
                 button.execute(interaction, res.params);
             });
         } else if (interaction.isSelectMenu()) {
-            selectMenuStore.forEach(selectMenu => {
+            selectMenuStore.forEach(async selectMenu => {
                 const res = isRegisteredId(selectMenu, interaction.customId);
-                if (!res.result) return;
+                if (!res.result || (selectMenu.filter && !(await selectMenu.filter(interaction, res.params)))) return;
                 selectMenu.execute(interaction, res.params);
             });
         }

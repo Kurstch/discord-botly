@@ -12,6 +12,8 @@ A simple Discord bot framework which aims to bring order and structure to Discor
   - [Slash Commands](#slash-commands)
     - [Registering Slash Commands](#registering-slash-commands)
   - [Button Interactions](#button-interactions)
+  - [Select Menu Interactions](#select-menu-interactions)
+  - [Filters](#filters)
 - [Dynamic Ids](#dynamic-ids)
 - [Typescript](#typescript)
 
@@ -194,6 +196,40 @@ module.exports.execute = function(interaction) {
 module.exports.execute = function(interaction, params) {
     interaction.guild.members.fetch(params.memberId)
         .then(member => member.roles.add(interaction.values[0]))
+}
+```
+
+### Filters
+
+Each module can have a filter,
+which is a function that can perform any checks
+and returns a `boolean`.
+
+The parameters for the filter function depend on the event/module:
+
+module type | parameters
+--- | ---
+CommandInteraction | interaction: `CommandInteraction`
+ButtonInteraction | interaction: `ButtonInteraction`, params: `object`
+SelectMenuInteraction | interaction: `ButtonInteraction`, params: `object`
+'ready' event | client: `Client`
+'messageReactionAdd' event | reaction: `MessageReaction`, user: `User`
+
+```js
+// ./buttons/clear-channel.js
+
+module.exports.filter = function(interaction) {
+    // Perform checks here
+    return true;
+}
+```
+
+```js
+// ./events/messageReactionAdd.js
+
+module.exports.filter = function(reaction, user) {
+    // Perform checks here
+    return true;
 }
 ```
 
