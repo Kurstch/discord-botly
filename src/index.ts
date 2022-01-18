@@ -35,7 +35,7 @@ export function init(args: InitArgs) {
     }
     args.client.on('interactionCreate', async interaction => {
         if (interaction.isCommand()) {
-            const command = commandStore.get(interaction.commandName);
+            const command = commandStore.find(command => command.commandData.name === interaction.commandName);
             if (!command || (command.filter && !(await command.filter(interaction)))) return;
             command.execute(interaction);
         } else if (interaction.isButton()) {
