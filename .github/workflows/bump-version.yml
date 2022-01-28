@@ -20,9 +20,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag-prefix: v
-          minor-wording: 'add,Add,adds,Adds,added,Added,new,New'
-          major-wording: 'MAJOR,major'
-          patch-wording: 'patch,Patch,patches,Patches,patched,Patched,fix,Fix,fixes,Fixes,fixed,Fixed'
           target-branch: main
           commit-message: 'Bump version to {{version}}'
       - name: cat package.json
