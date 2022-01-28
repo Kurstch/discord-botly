@@ -1,0 +1,42 @@
+name: Bump package version
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          fetch-dept: 0
+      - name: Setup Node.JS
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Compile Typescript
+        run: |
+          npm ci
+          tsc
+      - name: Bump Version
+        id: version-bump
+        uses: phips28/gh-action-bump-version@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag-prefix: v
+          minor-wording: 'add,Add,adds,Adds,added,Added,new,New'
+          major-wording: 'MAJOR,major'
+          patch-wording: 'patch,Patch,patches,Patches,patched,Patched,fix,Fix,fixes,Fixes,fixed,Fixed'
+          target-branch: ${{ github.ref_name }}
+          commit-message: 'Bump version to {{version}}'
+      - name: cat package.json
+        run: cat package.json
+      - name: Output Step
+        env:
+          NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
+        run: echo "new tag $NEW_TAG"
