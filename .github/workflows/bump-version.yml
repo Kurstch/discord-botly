@@ -3,7 +3,7 @@ name: Bump package version
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   bump:
@@ -32,7 +32,7 @@ jobs:
           minor-wording: 'add,Add,adds,Adds,added,Added,new,New'
           major-wording: 'MAJOR,major'
           patch-wording: 'patch,Patch,patches,Patches,patched,Patched,fix,Fix,fixes,Fixes,fixed,Fixed'
-          target-branch: ${{ github.ref_name }}
+          target-branch: main
           commit-message: 'Bump version to {{version}}'
       - name: cat package.json
         run: cat package.json
