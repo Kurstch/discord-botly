@@ -14,7 +14,7 @@ declare async function registerGlobalSlashCommands(client: Client<true>): Promis
 
 export interface InitArgs {
     /**
-     * Discord bot token
+     * The Discord client
      */
     client: Client;
     /**
