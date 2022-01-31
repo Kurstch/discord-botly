@@ -207,13 +207,14 @@ and returns a `boolean`.
 
 The parameters for the filter function depend on the event/module:
 
-module type | parameters
+module | parameters
 --- | ---
 CommandInteraction | interaction: `CommandInteraction`
 ButtonInteraction | interaction: `ButtonInteraction`, params: `object`
 SelectMenuInteraction | interaction: `ButtonInteraction`, params: `object`
 'ready' event | client: `Client`
 'messageReactionAdd' event | reaction: `MessageReaction`, user: `User`
+... | ...
 
 ```js
 // ./buttons/clear-channel.js
@@ -230,6 +231,24 @@ module.exports.filter = function(interaction) {
 module.exports.filter = function(reaction, user) {
     // Perform checks here
     return true;
+}
+```
+
+If the filter fails (returns `false`),
+The filterCallback function is called (if it exists).
+
+```js
+// ./commands/foo.js
+
+// This filter will always fail
+module.exports.filter = () => false
+
+// Will be called because the filter failed
+module.exports.filterCallback = (interaction) => {
+    interaction.reply({
+        ephemeral: true,
+        content: 'You do not have permission to use this command'
+    })
 }
 ```
 
