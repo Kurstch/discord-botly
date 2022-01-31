@@ -51,16 +51,19 @@ export type BotlyModule<T extends ModuleTypes> =
     ? {
         execute: SelectMenuOrButtonCallback<T>;
         filter?: SelectMenuOrButtonFilter<T>;
+        filterCallback?: SelectMenuOrButtonCallback<T>
     }
     : T extends CommandInteraction
     ? {
         commandData: SlashCommandBuilder;
         execute: CommandCallback;
         filter?: CommandFilter;
+        filterCallback?: CommandCallback;
     }
     : {
         execute: EventCallback<T>;
         filter?: EventFilter<T>;
+        filterCallback?: EventCallback<T>;
     };
 
 /**

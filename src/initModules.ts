@@ -62,5 +62,8 @@ function validateModule<T extends ModuleTypes>(type: Type, file: string, module:
     if (module.filter && typeof module.filter !== 'function')
         errors.push(`${file}: exports.filter must be either undefined or a function`);
 
+    if (module.filterCallback && typeof module.filterCallback !== 'function')
+        errors.push(`${file}: exports.filterCallback must be either undefined or a function`);
+
     return errors;
 }
