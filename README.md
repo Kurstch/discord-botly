@@ -300,46 +300,36 @@ where `T` is the type for the module (ie. command/selectMenu/button interaction 
 - selectMenu/give-[userId]-role - `BotlyModule<SelectMenuInteraction>`
 
 ```ts
+// Recommended Syntax
+export const {/* ..values */}: BotlyModule</* module type */> = {/* ...values */}
+```
+
+```ts
 // ./commands/ping.ts
 
 import { SlashCommandBuilder } from '@discordjs/builders';
 import type { CommandInteraction } from 'discord.js';
 import type { BotlyModule } from 'discord-botly';
 
-export const commandData: BotlyModule<CommandInteraction>['commandData'] = new SlashCommandBuilder()
-    .setName('ping')
-    .setDescription('replies with pong');
-
-export const execute: BotlyModule<CommandInteraction>['execute'] = interaction => {
-    interaction.reply('pong!');
-}
+export const {
+    commandData,
+    execute
+}: BotlyModule<CommandInteraction> = {
+    commandData: new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription('replies with pong'),
+    execute: interaction => interaction.reply('pong!')
+};
 ```
-
-If needed, there are also typing for the execute commands:
-
-- `CommandCallback`
-- `EventCallback<T extends keyof ClientEvents>`
-- `SelectMenuOrButtonCallback<T extends SelectMenuInteraction | ButtonInteraction>`
 
 ```ts
 // ./events/ready.ts
 
-import { EventCallback } from 'discord-botly';
+import type { BotlyModule } from 'discord-botly';
 
-export const execute: EventCallback<'ready'> = client => {
-    console.log(`client logged in as ${client.user?.tag}`);
-}
-```
-
-```ts
-// ./buttons/give-role-[roleId].ts
-
-import { GuildMember } from "discord.js"
-import type { ButtonInteraction } from "discord.js"
-import type { SelectMenuOrButtonCallback } from "discord-botly"
-
-export const execute: SelectMenuOrButtonCallback<ButtonInteraction> = (interaction, params) => {
-    if (interaction.member && interaction.member instanceof GuildMember)
-        interaction.member.roles.add(params.roleId)
-}
+export const { execute }: BotlyModule<'ready'> = {
+    execute: client => {
+        console.log(`client logged in as ${client.user.tag}`);
+    }
+};
 ```
