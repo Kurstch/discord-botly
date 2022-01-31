@@ -28,7 +28,11 @@ export function init(args: InitArgs) {
         const event = storedEvent[1] as ModuleData<'ready'>;
         args.client.on(storedEvent[0], async (...args) => {
             //@ts-ignore
-            if (event.filter && !(await event.filter(...args))) return;
+            if (event.filter && !(await event.filter(...args))) {
+                //@ts-ignore
+                if (event.filterCallback) event.filterCallback(...args);
+                return;
+            }
             //@ts-ignore
             event.execute(...args);
         });
@@ -36,18 +40,30 @@ export function init(args: InitArgs) {
     args.client.on('interactionCreate', async interaction => {
         if (interaction.isCommand()) {
             const command = commandStore.find(command => command.commandData.name === interaction.commandName);
-            if (!command || (command.filter && !(await command.filter(interaction)))) return;
+            if (!command) return;
+            if (command.filter && !(await command.filter(interaction))) {
+                if (command.filterCallback) command.filterCallback(interaction);
+                return;
+            }
             command.execute(interaction);
         } else if (interaction.isButton()) {
             buttonStore.forEach(async button => {
                 const res = isRegisteredId(button, interaction.customId);
-                if (!res.result || (button.filter && !(await button.filter(interaction, res.params)))) return;
+                if (!res.result) return;
+                if (button.filter && !(await button.filter(interaction, res.params))) {
+                    if (button.filterCallback) button.filterCallback(interaction, res.params);
+                    return;
+                }
                 button.execute(interaction, res.params);
             });
         } else if (interaction.isSelectMenu()) {
             selectMenuStore.forEach(async selectMenu => {
                 const res = isRegisteredId(selectMenu, interaction.customId);
-                if (!res.result || (selectMenu.filter && !(await selectMenu.filter(interaction, res.params)))) return;
+                if (!res.result) return;
+                if (selectMenu.filter && !(selectMenu.filter(interaction, res.params))) {
+                    if (selectMenu.filterCallback) selectMenu.filterCallback(interaction, res.params);
+                    return;
+                }
                 selectMenu.execute(interaction, res.params);
             });
         }
