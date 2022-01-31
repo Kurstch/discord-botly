@@ -55,7 +55,7 @@ export type BotlyModule<T extends ModuleTypes> =
     }
     : T extends CommandInteraction
     ? {
-        commandData: SlashCommandBuilder;
+        commandData: SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
         execute: CommandCallback;
         filter?: CommandFilter;
         filterCallback?: CommandCallback;
