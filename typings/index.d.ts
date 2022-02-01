@@ -1,4 +1,12 @@
-import type { ButtonInteraction, Client, ClientEvents, CommandInteraction, Interaction, SelectMenuInteraction } from 'discord.js';
+import type {
+    Client,
+    Interaction,
+    ClientEvents,
+    MessageReaction,
+    ButtonInteraction,
+    CommandInteraction,
+    SelectMenuInteraction
+} from 'discord.js';
 import type { SlashCommandBuilder } from '@discordjs/builders'
 
 /**
@@ -35,36 +43,35 @@ export interface InitArgs {
     selectMenuDir?: string;
 }
 
-export type ModuleTypes = SelectMenuInteraction | ButtonInteraction | CommandInteraction | keyof ClientEvents;
-export type CommandCallback = (interaction: CommandInteraction) => void;
-export type CommandFilter = (interaction: CommandInteraction) => boolean | Promise<boolean>;
-export type EventCallback<T extends keyof ClientEvents> = (...args: ClientEvents[T]) => void;
-export type EventFilter<T extends keyof ClientEvents> = (...args: ClientEvents[T]) => boolean | Promise<boolean>;
-export type SelectMenuOrButtonCallback<T extends SelectMenuInteraction | ButtonInteraction> = (Interaction: T, params: { [key: string]: string; }) => void;
-export type SelectMenuOrButtonFilter<T extends SelectMenuInteraction | ButtonInteraction> = (Interaction: T, params: { [key: string]: string; }) => boolean | Promise<boolean>;
+/**
+ * All of the accepted BotlyModule Types
+ */
+export type ModuleTypes =
+    SelectMenuInteraction
+    | ButtonInteraction
+    | CommandInteraction
+    | keyof ClientEvents;
+
+/**
+ * Determines what kind of params the BotlyModule functions should have
+ * depending on the BotlyModule Type
+ */
+export type FuncParams<T extends ModuleTypes> =
+    T extends CommandInteraction ? [interaction: T]
+    : T extends SelectMenuInteraction | ButtonInteraction ? [interaction: T, params: { [key: string]: string; }]
+    : ClientEvents[T]
 
 /**
  * Module code structure
  */
-export type BotlyModule<T extends ModuleTypes> =
-    T extends SelectMenuInteraction | ButtonInteraction
-    ? {
-        execute: SelectMenuOrButtonCallback<T>;
-        filter?: SelectMenuOrButtonFilter<T>;
-        filterCallback?: SelectMenuOrButtonCallback<T>
-    }
-    : T extends CommandInteraction
-    ? {
-        commandData: SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
-        execute: CommandCallback;
-        filter?: CommandFilter;
-        filterCallback?: CommandCallback;
-    }
-    : {
-        execute: EventCallback<T>;
-        filter?: EventFilter<T>;
-        filterCallback?: EventCallback<T>;
-    };
+export interface BotlyModule<T extends ModuleTypes> {
+    execute: (...args: FuncParams<T>) => void;
+    filter?: (...args: FuncParams<T>) => boolean | Promise<boolean>;
+    filterCallback?: (...args: FuncParams<T>) => void;
+}
+export interface BotlyModule<T extends CommandInteraction> {
+    commandData: SlashCommandBuilder | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
+}
 
 /**
  * A registered button/selectMenu customId.
@@ -89,7 +96,18 @@ export interface IdStore {
 /**
  * Data for a registered module
  */
-export type ModuleData<T extends ModuleTypes> =
-    T extends SelectMenuInteraction | ButtonInteraction
-    ? IdStore & BotlyModule<T>
-    : BotlyModule<T>;
+export interface ModuleData<T extends ModuleTypes> extends BotlyModule<T> { }
+export interface ModuleData<T extends SelectMenuInteraction | ButtonInteraction> extends BotlyModule<T>, IdStore { }
+
+/** @deprecated */
+export type CommandCallback = (interaction: CommandInteraction) => void;
+/** @deprecated */
+export type CommandFilter = (interaction: CommandInteraction) => boolean | Promise<boolean>;
+/** @deprecated */
+export type EventCallback<T extends keyof ClientEvents> = (...args: ClientEvents[T]) => void;
+/** @deprecated */
+export type EventFilter<T extends keyof ClientEvents> = (...args: ClientEvents[T]) => boolean | Promise<boolean>;
+/** @deprecated */
+export type SelectMenuOrButtonCallback<T extends SelectMenuInteraction | ButtonInteraction> = (Interaction: T, params: { [key: string]: string; }) => void;
+/** @deprecated */
+export type SelectMenuOrButtonFilter<T extends SelectMenuInteraction | ButtonInteraction> = (Interaction: T, params: { [key: string]: string; }) => boolean | Promise<boolean>;
