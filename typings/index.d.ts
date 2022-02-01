@@ -7,7 +7,7 @@ import type {
     CommandInteraction,
     SelectMenuInteraction
 } from 'discord.js';
-import type { SlashCommandBuilder } from '@discordjs/builders'
+import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from '@discordjs/builders'
 
 /**
  * Initializes botly
@@ -70,7 +70,7 @@ export interface BotlyModule<T extends ModuleTypes> {
     filterCallback?: (...args: FuncParams<T>) => void;
 }
 export interface BotlyModule<T extends CommandInteraction> {
-    commandData: SlashCommandBuilder | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
+    commandData: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
 }
 
 /**
