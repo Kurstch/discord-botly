@@ -64,13 +64,15 @@ export type FuncParams<T extends ModuleTypes> =
 /**
  * Module code structure
  */
-export interface BotlyModule<T extends ModuleTypes> {
+export type BotlyModule<T extends ModuleTypes> =
+    T extends CommandInteraction ? BotlyModuleCoreFunctions<T> & {
+        commandData: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
+    } : BotlyModuleCoreFunctions<T>;
+
+interface BotlyModuleCoreFunctions<T extends ModuleTypes> {
     execute: (...args: FuncParams<T>) => void;
     filter?: (...args: FuncParams<T>) => boolean | Promise<boolean>;
     filterCallback?: (...args: FuncParams<T>) => void;
-}
-export interface BotlyModule<T extends CommandInteraction> {
-    commandData: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
 }
 
 /**
