@@ -6,6 +6,7 @@ A simple Discord bot framework which aims to bring order and structure to Discor
 
 ## Table of Contents
 
+- [Examples](#examples)
 - [Usage](#usage)
   - [Initialization](#initialization)
   - [Events](#events)
@@ -16,6 +17,11 @@ A simple Discord bot framework which aims to bring order and structure to Discor
   - [Filters](#filters)
 - [Dynamic Ids](#dynamic-ids)
 - [Typescript](#typescript)
+
+## Examples
+
+- [Typescript Example](https://github.com/Kurstch/discord-botly/tree/main/examples/ts)
+- [Javascript Example](https://github.com/Kurstch/discord-botly/tree/main/examples/js)
 
 ## Usage
 
