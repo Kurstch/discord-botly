@@ -98,8 +98,9 @@ export interface IdStore {
 /**
  * Data for a registered module
  */
-export interface ModuleData<T extends ModuleTypes> extends BotlyModule<T> { }
-export interface ModuleData<T extends SelectMenuInteraction | ButtonInteraction> extends BotlyModule<T>, IdStore { }
+export type ModuleData<T extends ModuleTypes> =
+    T extends SelectMenuInteraction | ButtonInteraction ? BotlyModule<T> & IdStore
+    : BotlyModule<T>
 
 /** @deprecated */
 export type CommandCallback = (interaction: CommandInteraction) => void;
