@@ -14,10 +14,12 @@ const client = new Client({
 
 botly.init({
     client: client,
+    prefix: '!',
     eventsDir: path.join(__dirname, './events'),
     buttonsDir: path.join(__dirname, './buttons'),
     commandsDir: path.join(__dirname, './commands'),
-    selectMenuDir: path.join(__dirname, './selectMenus')
+    selectMenuDir: path.join(__dirname, './selectMenus'),
+    prefixCommandDir: path.join(__dirname, './prefixCommands')
 });
 
 client.login(process.env.TOKEN);
