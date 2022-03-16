@@ -12,6 +12,7 @@ A simple Discord bot framework which aims to bring order and structure to Discor
   - [Events](#events)
   - [Slash Commands](#slash-commands)
     - [Registering Slash Commands](#registering-slash-commands)
+  - [Prefix Commands](#prefix-commands)
   - [Button Interactions](#button-interactions)
   - [Select Menu Interactions](#select-menu-interactions)
   - [Filters](#filters)
@@ -42,6 +43,9 @@ A project using discord-botly may look something like this.
 |   └─channel-[id]-delete.js
 |-selectMenus
 |   give-[userId]-role.js
+|-prefixCommands
+|   foo.js
+|   hello.js
 |-index.js
 |-.env
 └─package.json
@@ -52,10 +56,12 @@ A project using discord-botly may look something like this.
 Discord botly has one exported `init` function which takes the following arguments:
 
 - client: the Discord client
+- (optional) prefix: the prefix used for prefix commands (eg. "!")
 - (optional) eventsDir: the absolute path to the events directory
 - (optional) commandsDir: the absolute path to the slash commands directory
 - (optional) buttonsDir: the absolute path to the button interactions directory
 - (optional) selectMenuDir: the absolute path to the select menu interactions directory
+- (optional) prefixCommandDir: the path to the prefix commands directory
 
 > Note: MessageReaction handler is not yet implemented.
 
@@ -82,10 +88,12 @@ const client = new Client({
 // Initialize discord-botly
 botly.init({
     client,
+    prefix: '!',
     eventsDir: path.join(__dirname, './events'),
     commandsDir: path.join(__dirname, './commands'),
     buttonsDir: path.join(__dirname, './buttons'),
-    selectMenuDir: path.join(__dirname, './selectMenus')
+    selectMenuDir: path.join(__dirname, './selectMenus'),
+    prefixCommandDir: path.join(__dirname, './prefixCommands')
 });
 
 client.login(process.env.TOKEN);
@@ -149,6 +157,33 @@ module.exports.execute = function(client) {
     registerGlobalSlashCommands(client)
 }
 
+```
+
+### Prefix Commands
+
+To add a handler for a prefix command,
+add a file in the `prefixCommandDir` directory.
+
+When adding prefix commands, the `prefixCommandDir` and `prefix`
+fields should be added to the init args.
+
+The filename is interpreted the command name (ie. `hello.js` will be run when `!hello` is typed).
+
+```js
+// ./prefixCommands/hello.js
+
+module.exports.execute = (message) => message.reply('Hello!');
+```
+
+If the function has any arguments,
+they are passed as the second parameter to all functions.
+
+```js
+// ./prefixCommands/hello.js
+
+module.exports.execute = (message, args) => message.reply(`Hello, ${args[0]}!`)
+module.exports.filter = (_, args) => !!args.length;
+module.exports.filterCallback = (message) => message.reply('Please provide a name, eg. `!hello <username>`');
 ```
 
 ### Button Interactions
