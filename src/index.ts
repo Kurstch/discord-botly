@@ -1,6 +1,6 @@
 import { Collection } from 'discord.js';
 import type { InitArgs, ModuleData } from "../typings/index";
-import type { CommandInteraction, ButtonInteraction, SelectMenuInteraction, ClientEvents } from 'discord.js';
+import type { CommandInteraction, ButtonInteraction, SelectMenuInteraction, ClientEvents, Message } from 'discord.js';
 import initModules from './initModules';
 import { isRegisteredId } from './utils/dynamicId';
 
@@ -8,10 +8,13 @@ export let eventStore: Collection<string, ModuleData<keyof ClientEvents>> = new 
 export let buttonStore: Collection<string, ModuleData<ButtonInteraction>> = new Collection();
 export let commandStore: Collection<string, ModuleData<CommandInteraction>> = new Collection();
 export let selectMenuStore: Collection<string, ModuleData<SelectMenuInteraction>> = new Collection();
+export let prefixCommandStore: Collection<string, ModuleData<Message>> = new Collection();
 
 export function init(args: InitArgs) {
     if (args.eventsDir)
         eventStore = initModules<keyof ClientEvents>('event', args.eventsDir);
+    if (args.prefixCommandDir && args.prefix)
+        prefixCommandStore = initModules<Message>('prefix command', args.prefixCommandDir);
     if (args.buttonsDir)
         buttonStore = initModules<ButtonInteraction>('button interaction', args.buttonsDir);
     if (args.commandsDir)
@@ -37,6 +40,20 @@ export function init(args: InitArgs) {
             event.execute(...args);
         });
     }
+    args.client.on('messageCreate', async message => {
+        if (!message.content.trimStart().startsWith(args.prefix!)) return;
+
+        const parts = message.content.trim().substring(args.prefix!.length).split(' ');
+        const command = prefixCommandStore.get(parts[0]);
+        const commandArgs = parts.slice(1).filter(s => s.length);
+
+        if (!command) return;
+        if (command.filter && !(await command.filter(message, commandArgs))) {
+            if (command.filterCallback) command.filterCallback(message, commandArgs);
+            return;
+        }
+        command.execute(message, commandArgs);
+    })
     args.client.on('interactionCreate', async interaction => {
         if (interaction.isCommand()) {
             const command = commandStore.find(command => command.commandData.name === interaction.commandName);

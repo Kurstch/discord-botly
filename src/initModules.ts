@@ -4,7 +4,11 @@ import fs from 'fs';
 import { registerId } from "./utils/dynamicId";
 import type { BotlyModule, ModuleData, ModuleTypes } from "../typings";
 
-type Type = 'event' | 'slash command' | 'button interaction' | 'select menu interaction';
+type Type = 'event'
+    | 'prefix command'
+    | 'slash command'
+    | 'button interaction'
+    | 'select menu interaction';
 
 export default function initModules<T extends ModuleTypes>(type: Type, dir: string): Collection<string, ModuleData<T>> {
     const store: Collection<string, ModuleData<T>> = new Collection();
