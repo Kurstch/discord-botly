@@ -35,17 +35,34 @@ A project using discord-botly may look something like this.
 |-commands
 |   |-foo.js
 |   └─help.js
+|
 |-events
+|   |-reactions
+|   |   |-messageReactionAdd.js
+|   |   └─messageReactionRemove.js
 |   └─ready.js
+|
 |-buttons
 |   |-channel-delete.js
 |   └─channel-[id]-delete.js
+|
 |-selectMenus
 |   give-[userId]-role.js
+|
 |-index.js
 |-.env
 └─package.json
 ```
+
+As seen in the example above,
+filenames are important with botly.
+For example, for events the filename is interpreted as the event name
+and for button and select menu interactions
+the filename is interpreted as the customId.
+
+For organization purposes,
+botly allows to put files in sub-directories
+(so directory names do not change how the files are read).
 
 ### Initialization
 
