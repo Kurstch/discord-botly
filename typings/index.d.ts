@@ -5,7 +5,8 @@ import type {
     MessageReaction,
     ButtonInteraction,
     CommandInteraction,
-    SelectMenuInteraction
+    SelectMenuInteraction,
+    Message
 } from 'discord.js';
 import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from '@discordjs/builders'
 
@@ -26,9 +27,18 @@ export interface InitArgs {
      */
     client: Client;
     /**
+     * The prefix used for prefix commands.
+     * @example "!"
+     */
+    prefix?: string;
+    /**
      * Absolute path to the Client event directory
      */
     eventsDir?: string;
+    /**
+     * Absolute path to the prefix command file directory
+     */
+    prefixCommandDir?: string;
     /**
      * Absolute path to the slash command interaction file directory
      */
@@ -50,7 +60,8 @@ export type ModuleTypes =
     SelectMenuInteraction
     | ButtonInteraction
     | CommandInteraction
-    | keyof ClientEvents;
+    | keyof ClientEvents
+    | Message;
 
 /**
  * Determines what kind of params the BotlyModule functions should have
@@ -59,6 +70,7 @@ export type ModuleTypes =
 export type FuncParams<T extends ModuleTypes> =
     T extends CommandInteraction ? [interaction: T]
     : T extends SelectMenuInteraction | ButtonInteraction ? [interaction: T, params: { [key: string]: string; }]
+    : T extends Message ? [message: Message, args: string[]]
     : ClientEvents[T]
 
 /**

@@ -22,6 +22,9 @@ jobs:
           tag-prefix: v
           target-branch: main
           commit-message: 'Bump version to {{version}}'
+          patch-wording: 'fix:,docs:,patch:,style:,refractor:'
+          minor-wording: 'feat:'
+          major-wording: 'BREAKING CHANGE:,MAJOR:'
       - name: cat package.json
         run: cat package.json
       - name: Output Step
