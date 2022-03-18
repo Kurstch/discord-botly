@@ -12,14 +12,14 @@ type Type = 'event'
 
 export default function initModules<T extends ModuleTypes>(type: Type, dir: string): Collection<string, ModuleData<T>> {
     const store: Collection<string, ModuleData<T>> = new Collection();
-    const files = fs.readdirSync(dir).filter(file => file.endsWith('.js'));
+    const files = getFiles(dir);
     const errors: string[] = [];
 
     console.group(`\nInitializing ${type}s:`);
 
-    for (const file of files) {
-        const module = require(path.join(dir, file)) as BotlyModule<T>;
-        const err = validateModule<T>(type, file, module);
+    for (const { filepath, filename } of files) {
+        const module = require(filepath) as BotlyModule<T>;
+        const err = validateModule<T>(type, filename, module);
 
         if (err.length) {
             errors.push(...err);
@@ -30,7 +30,7 @@ export default function initModules<T extends ModuleTypes>(type: Type, dir: stri
         const moduleData: ModuleData<T> = module;
 
         if (type === 'button interaction' || type === 'select menu interaction') {
-            const res = registerId(file.split('.js')[0]);
+            const res = registerId(filename.split('.js')[0]);
             if (res instanceof Error) {
                 errors.push(res.message);
                 continue;
@@ -40,7 +40,7 @@ export default function initModules<T extends ModuleTypes>(type: Type, dir: stri
             (<ModuleData<SelectMenuInteraction>>moduleData).params = res.params;
         }
 
-        store.set(file.split('.js')[0], moduleData);
+        store.set(filename.split('.js')[0], moduleData);
     }
 
     if (store.size > 0) console.log(`Successfully initialized ${store.size} ${type}(s)`);
@@ -52,6 +52,30 @@ export default function initModules<T extends ModuleTypes>(type: Type, dir: stri
     console.groupEnd();
 
     return store;
+}
+
+/**
+ * Reads the directory and recursively finds all .js files
+ * inside it and its sub-directories.
+ */
+function getFiles(dir: string): Array<{ filepath: string, filename: string; }> {
+    const dirents = fs.readdirSync(dir, { withFileTypes: true });
+    const results = [];
+
+    for (const dirent of dirents) {
+        const res = path.resolve(dir, dirent.name);
+
+        if (dirent.isDirectory()) {
+            results.push(...getFiles(path.resolve(dir, dirent.name)));
+        } else if (dirent.name.endsWith('.js')) {
+            results.push({
+                filepath: res,
+                filename: dirent.name,
+            });
+        }
+    }
+
+    return results;
 }
 
 function validateModule<T extends ModuleTypes>(type: Type, file: string, module: BotlyModule<T>): string[] {
