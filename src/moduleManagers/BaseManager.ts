@@ -94,8 +94,6 @@ export default abstract class BaseManager<
     /**
      * Console logs the results after all modules have been initialized
      * for the given directory.
-     *
-     * TODO: Find a cleaner method to write logs that doesn't involve passing the module type from all subclasses
      */
     private logResults(): void {
         const amount = this.modules.length;
