@@ -69,16 +69,18 @@ export type ModuleTypes =
  */
 export type FuncParams<T extends ModuleTypes> =
     T extends CommandInteraction ? [interaction: T]
-    : T extends SelectMenuInteraction | ButtonInteraction ? [interaction: T, params: { [key: string]: string; }]
+    : T extends SelectMenuInteraction | ButtonInteraction ? [interaction: ButtonInteraction | SelectMenuInteraction, params: { [key: string]: string; }]
     : T extends Message ? [message: Message, args: string[]]
     : ClientEvents[T]
+
+export type CommandData = SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
 
 /**
  * Module code structure
  */
 export type BotlyModule<T extends ModuleTypes> =
     T extends CommandInteraction ? BotlyModuleCoreFunctions<T> & {
-        commandData: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
+        commandData: CommandData;
     } : BotlyModuleCoreFunctions<T>;
 
 interface BotlyModuleCoreFunctions<T extends ModuleTypes> {
