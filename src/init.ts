@@ -22,11 +22,11 @@ export function init(config: InitArgs) {
     if (eventsDir)
         new EventModuleManager(client, eventsDir);
     if (buttonsDir)
-        new DynamicIdModuleManager(client, buttonsDir, 'button interaction');
+        new DynamicIdModuleManager(client, buttonsDir);
     if (commandsDir)
         slashCommandModuleManager = new SlashCommandModuleManager(client, commandsDir);
     if (selectMenuDir)
-        new DynamicIdModuleManager(client, selectMenuDir, 'select menu interaction');
+        new DynamicIdModuleManager(client, selectMenuDir);
     if (prefixCommandDir && prefix && prefix.length)
         new PrefixCommandModuleManager(prefix, client, prefixCommandDir);
 }

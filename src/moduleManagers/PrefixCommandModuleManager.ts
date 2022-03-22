@@ -8,7 +8,7 @@ export default class PrefixCommandModuleManager extends BaseManager<Message, Pre
     prefix!: string;
 
     constructor(prefix: string, client: Client, dir: string) {
-        super(client, dir, 'prefix command', { prefix });
+        super(client, dir, { prefix });
     }
 
     addListener(): void {
