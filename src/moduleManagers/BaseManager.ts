@@ -12,12 +12,6 @@ export interface DirReadResult {
     name: string;
 }
 
-type ModuleType = 'event'
-    | 'slash command'
-    | 'prefix command'
-    | 'button interaction'
-    | 'select menu interaction';
-
 /**
  * Base class for reading and initializing modules.
  */
@@ -31,13 +25,12 @@ export default abstract class BaseManager<
 {
     client: Client;
     modules: M[];
-    /** Used for indicating the module type when logging initialization results */
-    type: ModuleType;
+    dir: string;
 
     /**
      * @param otherParams parameters that should be set before importing and initializing all modules
      */
-    constructor(client: Client, dir: string, type: ModuleType, otherParams?: { [key: string]: string; }) {
+    constructor(client: Client, dir: string, otherParams?: { [key: string]: string; }) {
         // Sets properties used by subclass (such as `prefix`)
         // before modules are imported and initialized
         if (otherParams) Object
@@ -52,7 +45,7 @@ export default abstract class BaseManager<
 
         this.client = client;
         this.modules = modules;
-        this.type = type;
+        this.dir = dir;
 
         this.addListener();
         this.logResults();
@@ -101,12 +94,10 @@ export default abstract class BaseManager<
     /**
      * Console logs the results after all modules have been initialized
      * for the given directory.
-     *
-     * TODO: Find a cleaner method to write logs that doesn't involve passing the module type from all subclasses
      */
     private logResults(): void {
         const amount = this.modules.length;
-        console.log(`> Successfully initialized ${amount} ${this.type}(s)`);
+        console.log(`> Successfully initialized ${amount} module(s) from ${this.dir}`);
     };
 
     private logInitError(filepath: string, message: string): void {

@@ -2,15 +2,11 @@ import SlashCommandModule from '../modules/SlashCommandModule';
 import BaseManager from './BaseManager';
 import { Routes } from 'discord-api-types/v9';
 import { REST } from '@discordjs/rest';
-import type { Client, CommandInteraction } from 'discord.js';
+import type { CommandInteraction } from 'discord.js';
 import type { DirReadResult } from './BaseManager';
 import type { BotlyModule } from '../../typings';
 
 export default class SlashCommandModuleManager extends BaseManager<CommandInteraction, SlashCommandModule> {
-    constructor(client: Client, dir: string) {
-        super(client, dir, 'slash command');
-    }
-
     addListener(): void {
         this.client.on('interactionCreate', interaction => {
             if (!interaction.isCommand()) return;
