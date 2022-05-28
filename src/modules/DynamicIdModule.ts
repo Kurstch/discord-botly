@@ -28,7 +28,7 @@ export default class DynamicIdModule extends BaseModule<T> {
     matches(interaction: T): boolean {
         return (
             interaction.customId === this.id
-            && this.regexp.test(interaction.customId)
+            || this.regexp.test(interaction.customId)
         );
     }
 
