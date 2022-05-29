@@ -13,13 +13,19 @@ import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandS
 /**
  * Initializes botly
  */
-declare function init(args: InitArgs): void;
+export function init(args: InitArgs): void;
+
 /**
  * Registers all slash commands for every guild the bot is in globally.
  *
  * Recommended to run on the client 'ready' event.
  */
-declare async function registerGlobalSlashCommands(client: Client<true>): Promise<void>;
+export async function registerGlobalSlashCommands(client: Client<true>): Promise<void>;
+
+export default {
+    init,
+    registerGlobalSlashCommands,
+}
 
 export interface InitArgs {
     /**
