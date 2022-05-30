@@ -6,8 +6,8 @@
   "types": "typings/index.d.ts",
   "scripts": {
     "prepublish": "tsc",
-    "test": "jest",
-    "coverage": "jest --coverage"
+    "test": "jest --silent",
+    "coverage": "jest --coverage --silent"
   },
   "repository": {
     "type": "git",
