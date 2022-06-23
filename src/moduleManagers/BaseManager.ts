@@ -75,20 +75,10 @@ export default abstract class BaseManager<
     }
 
     private importModules(files: DirReadResult[]): M[] {
-        const modules: M[] = [];
-
-        for (const file of files) {
-            const res = require(file.path);
-
-            try {
-                const module = this.createModule(file, res);
-                modules.push(module);
-            } catch (error: any) {
-                this.logInitError(file.path, error.message);
-            }
-        }
-
-        return modules;
+        return files.map(file => {
+            const result = require(file.path);
+            return this.createModule(file, result);
+        });
     }
 
     /**
@@ -99,11 +89,6 @@ export default abstract class BaseManager<
         const amount = this.modules.length;
         console.log(`> Successfully initialized ${amount} module(s) from ${this.dir}`);
     };
-
-    private logInitError(filepath: string, message: string): void {
-        console.error(`> Failed to initialize ${filepath}`);
-        console.error(`\t${message}`);
-    }
 
     /**
      * Adds a listener on a specific client event(s).
