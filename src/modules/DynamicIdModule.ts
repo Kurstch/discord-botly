@@ -32,26 +32,7 @@ export default class DynamicIdModule extends BaseModule<T> {
         );
     }
 
-    async listener(interaction: T): Promise<void> {
-        const params = this.getParams(interaction);
-
-        if (await this.passesFilterIfExists(interaction, params))
-            this.execute(interaction, params);
-        else this.callFilterCallbackIfExists(interaction, params);
-    };
-
-    private validateId(): void {
-        if (this.params && new Set(this.params).size !== this.params.length)
-            throw new Error(`${this.filename}: every parameter in id must have a unique name`);
-    }
-
-    private createRegexp() {
-        const regexp = new RegExp('^' + this.id.replace(dynamicParamRegexp, '(.+)'));
-        const params = this.id.match(paramNameRegexp)!;
-        return { regexp, params };
-    }
-
-    private getParams(interaction: T): { [key: string]: string; } {
+    getParams(interaction: T): { [key: string]: string; } {
         const params: { [key: string]: string; } = {};
 
         if (!this.params || !this.params.length) return params;
@@ -63,5 +44,22 @@ export default class DynamicIdModule extends BaseModule<T> {
         }
 
         return params;
+    }
+
+    async listener(interaction: T, params: { [key: string]: string; }): Promise<void> {
+        if (await this.passesFilterIfExists(interaction as any, params))
+            this.execute(interaction, params);
+        else this.callFilterCallbackIfExists(interaction as any, params);
+    }
+
+    private validateId(): void {
+        if (this.params && new Set(this.params).size !== this.params.length)
+            throw new Error(`${this.filename}: every parameter in id must have a unique name`);
+    }
+
+    private createRegexp() {
+        const regexp = new RegExp('^' + this.id.replace(dynamicParamRegexp, '(.+)'));
+        const params = this.id.match(paramNameRegexp)!;
+        return { regexp, params };
     }
 }
