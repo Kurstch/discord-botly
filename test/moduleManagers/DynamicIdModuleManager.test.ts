@@ -60,7 +60,7 @@ describe('Testing DynamicIdModuleManager', () => {
         callback(fakeInteraction);
 
         expect(listenerSpy).toHaveBeenCalled();
-        expect(listenerSpy).toHaveBeenCalledWith(fakeInteraction);
+        expect(listenerSpy).toHaveBeenCalledWith(fakeInteraction, {});
 
     });
 

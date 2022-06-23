@@ -75,7 +75,8 @@ export type ModuleTypes =
  */
 export type FuncParams<T extends ModuleTypes> =
     T extends CommandInteraction ? [interaction: T]
-    : T extends SelectMenuInteraction | ButtonInteraction ? [interaction: ButtonInteraction | SelectMenuInteraction, params: { [key: string]: string; }]
+    : T extends SelectMenuInteraction ? [interaction: SelectMenuInteraction, params: { [key: string]: string; }]
+    : T extends ButtonInteraction ? [interaction: ButtonInteraction, params: { [key: string]: string; }]
     : T extends Message ? [message: Message, args: string[]]
     : ClientEvents[T]
 

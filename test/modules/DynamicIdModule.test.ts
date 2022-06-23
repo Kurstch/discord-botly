@@ -43,7 +43,7 @@ describe('Testing DynamicIdModule', () => {
                 execute: callback,
             });
 
-            await module.listener({} as any);
+            await module.listener({} as any, {});
             expect(callback).toHaveBeenCalled();
         });
 
@@ -55,7 +55,7 @@ describe('Testing DynamicIdModule', () => {
                 filterCallback: callback,
             });
 
-            await module.listener({} as any);
+            await module.listener({} as any, {});
             expect(callback).toHaveBeenCalled();
         });
     });
