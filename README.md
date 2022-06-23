@@ -79,6 +79,9 @@ For better organization, modules can be infinitely nested into sub-directories.
 In the examples below we will be using TypeScript.
 JavaScript can also be used, however TypeScript is recommended.
 
+If you wish to see how Discord Botly is used in a real project,
+you can view [Dual Bot](https://github.com/Kurstch/DualBot).
+
 ### Initialization
 
 ```ts
