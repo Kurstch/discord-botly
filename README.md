@@ -156,6 +156,8 @@ export const {
 }
 ```
 
+For more detailed samples see [code-samples.md](code-samples.md)
+
 #### Module Exports
 
 Discord Botly searches for specific `exports` in the BotlyModule files:
