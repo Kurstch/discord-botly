@@ -19,6 +19,7 @@ Discord Botly is a Discord Bot framework that wraps the [Discord.js](https://git
     - [Dynamic parameter Ids](#dynamic-parameter-ids)
   - [Utils](#utils)
     - [Registering slash commands](#registering-slash-commands)
+    - [Prefix Command Data](#prefix-command-data)
 
 ## What is Discord Botly and Why Use It?
 
@@ -37,6 +38,8 @@ Discord Botly is a Discord Bot framework that wraps the [Discord.js](https://git
 3. Botly provides multiple utilities, such as:
     - Methods for registering slash commands (so you don't have to mess around with the Discord API)
     - For `ButtonInteraction` and `SelectMenuInteraction` you can use [Dynamic parameter ids](#dynamic-parameter-ids)
+    - Prefix command data is automatically gathered into one constant so you don't have to write help command manually,
+      see [prefixCommandData](#prefix-command-data)
 
 The project code may look something like this:
 
@@ -165,12 +168,15 @@ For more detailed samples see [code-samples.md](code-samples.md)
 
 Discord Botly searches for specific `exports` in the BotlyModule files:
 
-| export name    | type                           | module type   | required | description                                                                                          |
-| -------------- | ------------------------------ | ------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| execute        | function                       | *             | true     | can run any code, for example, replies 'pong' for '/ping' command                                    |
-| filter         | function                       | *             | false    | checks wether execute can be called, returns a `boolean`                                             |
-| filterCallback | function                       | *             | false    | called when the `filter` function fails                                                              |
-| commandData    | instanceof SlashCommandBuilder | slash command | true     | the slash command data, use [@discordjs/builders](https://www.npmjs.com/package/@discordjs/builders) |
+| export name    | type                           | module type    | required | description                                                                                          |
+| -------------- | ------------------------------ | -------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| execute        | function                       | *              | true     | can run any code, for example, replies 'pong' for '/ping' command                                    |
+| filter         | function                       | *              | false    | checks wether execute can be called, returns a `boolean`                                             |
+| filterCallback | function                       | *              | false    | called when the `filter` function fails                                                              |
+| commandData    | instanceof SlashCommandBuilder | slash command  | true     | the slash command data, use [@discordjs/builders](https://www.npmjs.com/package/@discordjs/builders) |
+| description    | string                         | prefix command | false    | a description of the prefix command, used for [prefixCommandData](#prefix-command-data)              |
+| syntax         | string                         | prefix command | false    | the syntax for the prefix command, used for [prefixCommandData](#prefix-command-data)                |
+| category       | string                         | prefix command | false    | what category the prefix command is in, used for [prefixCommandData](#prefix-command-data)           |
 
 #### Callback Parameters
 
@@ -247,5 +253,50 @@ export const { execute }: BotlyModule<'ready'> = {
     execute: client => {
         registerGlobalSlashCommands(client)
     }
+}
+```
+
+#### Prefix Command Data
+
+This is a utility that automatically gathers the `name`, `description`,
+`syntax` and `category` for all of your prefix commands
+in one easy-to-access place.
+
+For an example on how `prefixCommandData` can be used, see [code-samples](code-samples.md#using-prefixcommanddata)
+
+```ts
+import { prefixCommandData } from 'discord-botly'
+
+console.log(prefixCommandData())
+/*
+    Logs: [
+        { name: 'help', description: 'See available commands', syntax: 'help', category: undefined },
+        { name: 'ban', description: 'Ban a member', syntax: 'ban @member', category: 'admin' },
+        { name: 'coin', description: 'Toss a coin', syntax: 'coin', category: 'games' },
+    ]
+*/
+```
+
+The `name`, `description`, `syntax` and `category` are automatically
+gathered from the prefix command modules.
+
+The `name` comes from the filename, and the rest comes from exports.
+
+```ts
+// prefixCommands/games/coin.ts
+
+import type { Message } from 'discord.js'
+import type { BotlyModule } from 'discord-botly'
+
+export const {
+    execute,
+    category,
+    description,
+    syntax,
+}: BotlyModule<Message> = {
+    description: 'Replies with a greeting',
+    syntax: '!hello <name>',
+    category: 'games',
+    execute: message => message.reply(Math.random() > 0.5 ? 'You got tails!' : 'You got heads!'),
 }
 ```

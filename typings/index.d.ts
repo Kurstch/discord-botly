@@ -22,6 +22,8 @@ export function init(args: InitArgs): void;
  */
 export async function registerGlobalSlashCommands(client: Client<true>): Promise<void>;
 
+export function prefixCommandData(): PrefixCommandData[];
+
 export default {
     init,
     registerGlobalSlashCommands,
@@ -86,14 +88,28 @@ export type CommandData = SlashCommandBuilder | SlashCommandOptionsOnlyBuilder |
  * Module code structure
  */
 export type BotlyModule<T extends ModuleTypes> =
-    T extends CommandInteraction ? BotlyModuleCoreFunctions<T> & {
-        commandData: CommandData;
-    } : BotlyModuleCoreFunctions<T>;
+    T extends CommandInteraction ? BotlyModuleCoreFunctions<T> & SlashCommandModule
+    : T extends Message ? BotlyModuleCoreFunctions<T> & PrefixCommandModule
+    : BotlyModuleCoreFunctions<T>;
 
 interface BotlyModuleCoreFunctions<T extends ModuleTypes> {
     execute: (...args: FuncParams<T>) => void;
     filter?: (...args: FuncParams<T>) => boolean | Promise<boolean>;
     filterCallback?: (...args: FuncParams<T>) => void;
+}
+
+interface SlashCommandModule {
+    commandData: CommandData;
+}
+
+interface PrefixCommandModule {
+    description?: string;
+    category?: string;
+    syntax?: string;
+}
+
+export interface PrefixCommandData extends PrefixCommandModule {
+    name: string;
 }
 
 /**

@@ -35,7 +35,7 @@ describe('Testing PrefixCommandModuleManager', () => {
         callback(message);
 
         expect(matchSpy).toHaveBeenCalledWith(message);
-        expect(matchSpy).toBeCalledTimes(1);
+        expect(matchSpy).toBeCalledTimes(2);
     });
 
     it('should call listener', () => {
@@ -52,8 +52,20 @@ describe('Testing PrefixCommandModuleManager', () => {
     it('should create module', () => {
         const manager = createManager();
 
-        expect(createModuleSpy).toHaveBeenCalledTimes(1);
-        expect(manager.modules.length).toBe(1);
+        expect(createModuleSpy).toHaveBeenCalledTimes(2);
+        expect(manager.modules.length).toBe(2);
         expect(manager.modules[0]).toBeInstanceOf(PrefixCommandModule);
+        expect(manager.modules[1]).toBeInstanceOf(PrefixCommandModule);
+    });
+
+    it('should return prefix command data', () => {
+        const manager = createManager();
+
+        expect(manager.commandData).toContainEqual(
+            { name: 'ping', description: 'Replies with `pong!`', syntax: 'ping', category: 'random' },
+        );
+        expect(manager.commandData).toContainEqual(
+            { name: 'foo', description: undefined, syntax: undefined, category: undefined },
+        );
     });
 });

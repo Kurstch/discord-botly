@@ -7,6 +7,7 @@ import type { InitArgs } from '../typings';
 // Export the slashCommandModuleManager
 // to allow the user to use the registerGlobalCommands function
 export let slashCommandModuleManager: SlashCommandModuleManager;
+export let prefixCommandModuleManager: PrefixCommandModuleManager;
 
 export function init(config: InitArgs) {
     const {
@@ -28,5 +29,5 @@ export function init(config: InitArgs) {
     if (selectMenuDir)
         new DynamicIdModuleManager(client, selectMenuDir);
     if (prefixCommandDir && prefix && prefix.length)
-        new PrefixCommandModuleManager(prefix, client, prefixCommandDir);
+        prefixCommandModuleManager = new PrefixCommandModuleManager(prefix, client, prefixCommandDir);
 }

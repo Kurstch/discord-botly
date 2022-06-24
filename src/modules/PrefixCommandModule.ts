@@ -4,10 +4,19 @@ import type { BotlyModule } from '../../typings';
 
 export default class PrefixCommandModule extends BaseModule<Message> {
     readonly prefix: string;
+    readonly description?: string;
+    readonly category?: string;
+    readonly syntax?: string;
 
     constructor(prefix: string, filename: string, file: BotlyModule<Message>) {
         super(filename, file);
+
         this.prefix = prefix;
+        this.description = file.description;
+        this.category = file.category;
+        this.syntax = file.syntax;
+
+        this.validateCommandData()
     }
 
     async listener(message: Message): Promise<void> {
@@ -33,5 +42,16 @@ export default class PrefixCommandModule extends BaseModule<Message> {
         if (!hasPrefix) return false;
         if (!isCommand) return false;
         return true;
+    }
+
+    private validateCommandData(): void {
+        const isValid = (val: any) => typeof val === 'string' || typeof val === 'undefined';
+
+        if (!isValid(this.description))
+            throw new Error(`${this.filename}: exports.description must be undefined or a string`);
+        if (!isValid(this.syntax))
+            throw new Error(`${this.filename}: exports.syntax must be undefined or a string`);
+        if (!isValid(this.category))
+            throw new Error(`${this.filename}: exports.category must be undefined or a string`);
     }
 }

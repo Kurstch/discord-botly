@@ -1,4 +1,5 @@
 import PrefixCommandModule from '../../src/modules/PrefixCommandModule';
+import type { BotlyModule } from '../../typings';
 
 describe('Testing PrefixCommandModule', () => {
     it('should create prefix parameter', () => {
@@ -53,4 +54,30 @@ describe('Testing PrefixCommandModule', () => {
             expect(module1.matches({ content: '!invalid' } as any)).toBe(false);
         });
     })
+
+    describe('Testing validateCommandData method', () => {
+        const execute = () => { };
+
+        const validDescription = { execute, description: '' };
+        const validSyntax = { execute, syntax: '' };
+        const validCategory = { execute, category: '' };
+
+        const invalidDescription = { execute, description: 0 } as unknown as BotlyModule<any>;
+        const invalidSyntax = { execute, syntax: 0 } as unknown as BotlyModule<any>;
+        const invalidCategory = { execute, category: 0 } as unknown as BotlyModule<any>;
+
+        it('should not throw', () => {
+            expect(() => new PrefixCommandModule('!', 'someName.js', validDescription)).not.toThrowError();
+            expect(() => new PrefixCommandModule('!', 'someName.js', validSyntax)).not.toThrowError();
+            expect(() => new PrefixCommandModule('!', 'someName.js', validCategory)).not.toThrowError();
+        });
+
+        it('should throw error', () => {
+            expect(() =>
+                new PrefixCommandModule('!', 'someName.js', invalidDescription)
+            ).toThrowError();
+            expect(() => new PrefixCommandModule('!', 'someName.js', invalidSyntax)).toThrowError();
+            expect(() => new PrefixCommandModule('!', 'someName.js', invalidCategory)).toThrowError();
+        });
+    });
 });
