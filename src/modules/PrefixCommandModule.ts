@@ -44,12 +44,14 @@ export default class PrefixCommandModule extends BaseModule<Message> {
         return true;
     }
 
-    validateCommandData() {
-        if (this.description && typeof this.description !== 'string')
+    private validateCommandData(): void {
+        const isValid = (val: any) => typeof val === 'string' || typeof val === 'undefined';
+
+        if (!isValid(this.description))
             throw new Error(`${this.filename}: exports.description must be undefined or a string`);
-        if (this.syntax && typeof this.syntax !== 'string')
+        if (!isValid(this.syntax))
             throw new Error(`${this.filename}: exports.syntax must be undefined or a string`);
-        if (this.category && typeof this.category !== 'string')
+        if (!isValid(this.category))
             throw new Error(`${this.filename}: exports.category must be undefined or a string`);
     }
 }
