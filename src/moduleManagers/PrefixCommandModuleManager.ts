@@ -24,8 +24,10 @@ export default class PrefixCommandModuleManager extends BaseManager<Message, Pre
 
     get commandData(): PrefixCommandData[] {
         return this.modules.map(module => ({
-            ...module,
             name: module.filenameWithoutExt,
+            description: module.description,
+            syntax: module.syntax,
+            category: module.category,
         }));
     }
 }
