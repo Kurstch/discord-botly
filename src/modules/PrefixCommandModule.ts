@@ -15,6 +15,8 @@ export default class PrefixCommandModule extends BaseModule<Message> {
         this.description = file.description;
         this.category = file.category;
         this.syntax = file.syntax;
+
+        this.validateCommandData()
     }
 
     async listener(message: Message): Promise<void> {
@@ -40,5 +42,14 @@ export default class PrefixCommandModule extends BaseModule<Message> {
         if (!hasPrefix) return false;
         if (!isCommand) return false;
         return true;
+    }
+
+    validateCommandData() {
+        if (this.description && typeof this.description !== 'string')
+            throw new Error(`${this.filename}: exports.description must be undefined or a string`);
+        if (this.syntax && typeof this.syntax !== 'string')
+            throw new Error(`${this.filename}: exports.syntax must be undefined or a string`);
+        if (this.category && typeof this.category !== 'string')
+            throw new Error(`${this.filename}: exports.category must be undefined or a string`);
     }
 }
