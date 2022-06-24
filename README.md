@@ -19,6 +19,7 @@ Discord Botly is a Discord Bot framework that wraps the [Discord.js](https://git
     - [#Dynamic parameter Ids](#dynamic-parameter-ids)
   - [#Utils](#utils)
     - [#Registering slash commands](#registering-slash-commands)
+    - [Prefix Command Data](#prefix-command-data)
 
 ## What is Discord Botly and Why Use It?
 
