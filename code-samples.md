@@ -155,7 +155,7 @@ export const { execute, description, syntax }: BotlyModule<Message> = {
                     .setTitle('Team Commands')
                     .setDescription(
                         commands
-                            .filter(command => command.category === 'games')
+                            .filter(command => command.category === 'teams')
                             .map(commandToDescription)
                             .join('\n')
                     )
