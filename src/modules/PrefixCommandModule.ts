@@ -4,10 +4,17 @@ import type { BotlyModule } from '../../typings';
 
 export default class PrefixCommandModule extends BaseModule<Message> {
     readonly prefix: string;
+    readonly description?: string;
+    readonly category?: string;
+    readonly syntax?: string;
 
     constructor(prefix: string, filename: string, file: BotlyModule<Message>) {
         super(filename, file);
+
         this.prefix = prefix;
+        this.description = file.description;
+        this.category = file.category;
+        this.syntax = file.syntax;
     }
 
     async listener(message: Message): Promise<void> {
