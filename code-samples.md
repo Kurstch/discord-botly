@@ -115,3 +115,66 @@ export const { execute, filter, filterCallback }: BotlyModule<Message> = {
     }
 }
 ```
+
+## Using PrefixCommandData
+
+```ts
+// prefixCommands/help.ts
+
+import { Message, MessageEmbed } from 'discord.js'
+import { BotlyModule, PrefixCommandData, prefixCommandData } from 'discord-botly'
+
+function commandToDescription(command: PrefixCommandData): string {
+    const descriptionStr = command.description ? ` - ${command.description}` : ''
+    const syntaxStr = command.syntax ? ` - ${command.syntax}` : ''
+    return `**${command.name}**${descriptionStr}${syntaxStr}`
+}
+
+export const { execute, description, syntax }: BotlyModule<Message> = {
+    description: 'See all available commands',
+    syntax: 'help <category>',
+
+    async execute(message, args) {
+        const commands = prefixCommandData()
+        const [category] = args
+        const embed = new MessageEmbed()
+
+        switch (category) {
+            case 'games':
+                embed
+                    .setTitle('Game Commands')
+                    .setDescription(
+                        commands
+                            .filter(command => command.category === 'games')
+                            .map(commandToDescription)
+                            .join('\n')
+                    )
+                break
+            case 'teams':
+                embed
+                    .setTitle('Team Commands')
+                    .setDescription(
+                        commands
+                            .filter(command => command.category === 'games')
+                            .map(commandToDescription)
+                            .join('\n')
+                    )
+                break
+            default:
+                embed
+                    .setTitle('The Most Common Commands')
+                    .setDescription(`
+                        To see commands by category,
+                        use \`!help <category>\`.
+
+                        Available categories: \`games\`, \`teams\`
+
+                        All commands:
+                        ${commands.map(commandToDescription).join('\n')}
+                    `)
+        }
+
+        message.reply({ embeds: [embed] })
+    }
+}
+```
