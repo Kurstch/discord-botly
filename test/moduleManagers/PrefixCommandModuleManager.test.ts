@@ -56,4 +56,15 @@ describe('Testing PrefixCommandModuleManager', () => {
         expect(manager.modules.length).toBe(1);
         expect(manager.modules[0]).toBeInstanceOf(PrefixCommandModule);
     });
+
+    it('should return prefix command data', () => {
+        const manager = createManager();
+
+        expect(manager.commandData).toContainEqual(
+            { name: 'ping', description: 'Replies with `pong!`', syntax: 'ping', category: 'random' },
+        );
+        expect(manager.commandData).toContainEqual(
+            { name: 'foo', description: undefined, syntax: undefined, category: undefined },
+        );
+    });
 });
