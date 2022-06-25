@@ -2,7 +2,6 @@ import EventModule from '../modules/EventModule';
 import BaseManager from './BaseManager';
 import type { ClientEvents } from 'discord.js';
 import type { BotlyModule, FuncParams } from '../../typings';
-import type { DirReadResult } from './BaseManager';
 
 export default class EventModuleManager<T extends keyof ClientEvents> extends BaseManager<T, EventModule<T>> {
     addListener(): void {
@@ -15,7 +14,7 @@ export default class EventModuleManager<T extends keyof ClientEvents> extends Ba
         }
     }
 
-    createModule(file: DirReadResult, module: BotlyModule<T>): EventModule<T> {
-        return new EventModule(file.name, module);
+    createModule(filename: string, module: BotlyModule<T>): EventModule<T> {
+        return new EventModule(filename, module);
     }
 }

@@ -1,7 +1,6 @@
 import DynamicIdModule from '../modules/DynamicIdModule';
 import BaseManager from './BaseManager';
 import type { ButtonInteraction, SelectMenuInteraction } from 'discord.js';
-import type { DirReadResult } from './BaseManager';
 import type { BotlyModule } from '../../typings';
 
 type T = ButtonInteraction | SelectMenuInteraction;
@@ -15,7 +14,7 @@ export default class DynamicIdModuleManager extends BaseManager<T, DynamicIdModu
         });
     }
 
-    createModule(file: DirReadResult, module: BotlyModule<T>): DynamicIdModule {
-        return new DynamicIdModule(file.name, module);
+    createModule(filename: string, module: BotlyModule<T>): DynamicIdModule {
+        return new DynamicIdModule(filename, module);
     }
 }

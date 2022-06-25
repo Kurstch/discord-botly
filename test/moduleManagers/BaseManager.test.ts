@@ -30,16 +30,10 @@ describe('Testing BaseManager', () => {
         createManager();
         const res: any[] = readDirSpy.mock.results[0].value;
 
-        const find = (name: string, filepath: string) => {
-            expect(res.find(
-                m => m.name === name && m.path === path.join(dirPath, filepath)
-            )).toBeTruthy();
-        };
-
-        expect(readDirSpy).toHaveBeenCalledTimes(2); // Reads subdirectories recursively
+        expect(readDirSpy).toHaveBeenCalledTimes(1); // Reads subdirectories recursively
         expect(res).toHaveLength(2);
-        find('ping.js', './ping.js');
-        find('ban.js', './admin/ban.js');
+        expect(res.find(p => path.basename(p) == 'ping.js')).toBeTruthy();
+        expect(res.find(p => path.basename(p) == 'ban.js')).toBeTruthy();
     });
 
     describe('Testing importModules method', () => {
@@ -47,9 +41,11 @@ describe('Testing BaseManager', () => {
             createManager();
             const dirReadRes = readDirSpy.mock.results[0].value;
 
+            console.log(dirReadRes);
+
             expect(createModuleSpy).toBeCalledTimes(2);
-            expect(createModuleSpy).toBeCalledWith(dirReadRes[0], require(dirReadRes[0].path));
-            expect(createModuleSpy).toBeCalledWith(dirReadRes[1], require(dirReadRes[1].path));
+            expect(createModuleSpy).toBeCalledWith(path.basename(dirReadRes[0]), require(dirReadRes[0]));
+            expect(createModuleSpy).toBeCalledWith(path.basename(dirReadRes[1]), require(dirReadRes[1]));
         });
 
         it('should throw because of invalid module', () => {
