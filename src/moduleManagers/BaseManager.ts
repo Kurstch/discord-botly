@@ -1,5 +1,5 @@
-import fs from 'fs';
 import path from 'path';
+import walkdir from 'walkdir';
 import type { Client } from 'discord.js';
 import type { BotlyModule, ModuleTypes } from '../../typings';
 import type DynamicIdModule from '../modules/DynamicIdModule';
@@ -51,33 +51,15 @@ export default abstract class BaseManager<
         this.logResults();
     }
 
-    /**
-     * Recursively finds all javascript files in the given directory
-     * and all of it's sub-directories
-     */
-    private readDir(dir: string): DirReadResult[] {
-        const dirents = fs.readdirSync(dir, { withFileTypes: true });
-        const files: DirReadResult[] = [];
-
-        for (const dirent of dirents) {
-            const res = path.resolve(dir, dirent.name);
-
-            if (dirent.isDirectory())
-                files.push(...this.readDir(res));
-            else if (dirent.name.endsWith('.js'))
-                files.push({
-                    path: res,
-                    name: dirent.name,
-                });
-        }
-
-        return files;
+    private readDir(dir: string): string[] {
+        return walkdir.sync(dir)
+            .filter(filename => filename.endsWith('.js'));
     }
 
-    private importModules(files: DirReadResult[]): M[] {
-        return files.map(file => {
-            const result = require(file.path);
-            return this.createModule(file, result);
+    private importModules(files: string[]): M[] {
+        return files.map(filepath => {
+            const result = require(filepath);
+            return this.createModule(path.basename(filepath), result);
         });
     }
 
@@ -105,5 +87,5 @@ export default abstract class BaseManager<
      * (ie. EventModule/SlashCommandModule etc.)
      * which can take different parameters.
      */
-    abstract createModule(file: DirReadResult, module: BotlyModule<T>): M;
+    abstract createModule(filename: string, module: BotlyModule<T>): M;
 }

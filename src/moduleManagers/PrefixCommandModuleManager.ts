@@ -1,7 +1,6 @@
 import PrefixCommandModule from '../modules/PrefixCommandModule';
 import BaseManager from './BaseManager';
 import type { Client, Message } from 'discord.js';
-import type { DirReadResult } from './BaseManager';
 import type { BotlyModule, PrefixCommandData } from '../../typings';
 
 export default class PrefixCommandModuleManager extends BaseManager<Message, PrefixCommandModule> {
@@ -18,8 +17,8 @@ export default class PrefixCommandModuleManager extends BaseManager<Message, Pre
         });
     }
 
-    createModule(file: DirReadResult, module: BotlyModule<Message>): PrefixCommandModule {
-        return new PrefixCommandModule(this.prefix, file.name, module);
+    createModule(filename: string, module: BotlyModule<Message>): PrefixCommandModule {
+        return new PrefixCommandModule(this.prefix, filename, module);
     }
 
     get commandData(): PrefixCommandData[] {

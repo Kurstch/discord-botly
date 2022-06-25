@@ -3,7 +3,6 @@ import BaseManager from './BaseManager';
 import { Routes } from 'discord-api-types/v9';
 import { REST } from '@discordjs/rest';
 import type { CommandInteraction } from 'discord.js';
-import type { DirReadResult } from './BaseManager';
 import type { BotlyModule } from '../../typings';
 
 export default class SlashCommandModuleManager extends BaseManager<CommandInteraction, SlashCommandModule> {
@@ -15,8 +14,8 @@ export default class SlashCommandModuleManager extends BaseManager<CommandIntera
         });
     }
 
-    createModule(file: DirReadResult, module: BotlyModule<CommandInteraction>): SlashCommandModule {
-        return new SlashCommandModule(module.commandData, file.name, module);
+    createModule(filename: string, module: BotlyModule<CommandInteraction>): SlashCommandModule {
+        return new SlashCommandModule(module.commandData, filename, module);
     }
 
     /**
