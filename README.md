@@ -8,7 +8,7 @@ Discord Botly is a Discord Bot framework that wraps the [Discord.js](https://git
 
 - [What is Discord Botly and why use it?](#what-is-discord-botly-and-why-use-it)
   - [What is the purpose of this framework?](#what-is-the-purpose-of-this-framework)
-  - [#How does it achieve those things?](#how-does-it-achieve-those-things)
+  - [How does it achieve those things?](#how-does-it-achieve-those-things)
 - [Usage](#usage)
   - [Initialization](#initialization)
   - [BotlyModules](#botlymodules)
