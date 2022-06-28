@@ -20,7 +20,7 @@ export default abstract class BaseManager<
     M extends PrefixCommandModule
     | SlashCommandModule
     | DynamicIdModule
-    // @ts-ignore
+    // @ts-expect-error - expect T to be `keyof ClientEvents`
     | EventModule<T>>
 {
     client: Client;
@@ -46,6 +46,7 @@ export default abstract class BaseManager<
 
     private importModules(files: string[]): M[] {
         return files.map(filepath => {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             const result = require(filepath);
             return this.createModule(path.basename(filepath), result);
         });
@@ -58,7 +59,7 @@ export default abstract class BaseManager<
     private logResults(): void {
         const amount = this.modules.length;
         console.log(`> Successfully initialized ${amount} module(s) from ${this.dir}`);
-    };
+    }
 
     /**
      * Adds a listener on a specific client event(s).

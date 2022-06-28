@@ -16,7 +16,7 @@ export default class PrefixCommandModule extends BaseModule<Message> {
         this.syntax = file.syntax;
         this.aliases = file.aliases ?? [];
 
-        this.validateCommandData()
+        this.validateCommandData();
     }
 
     async listener(message: Message): Promise<void> {
@@ -46,7 +46,7 @@ export default class PrefixCommandModule extends BaseModule<Message> {
     }
 
     private validateCommandData(): void {
-        const isValid = (val: any) => typeof val === 'string' || typeof val === 'undefined';
+        const isValid = (val: unknown) => typeof val === 'string' || typeof val === 'undefined';
 
         if (!isValid(this.description))
             throw new Error(`${this.filename}: exports.description must be undefined or a string`);

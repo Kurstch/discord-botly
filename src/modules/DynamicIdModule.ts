@@ -39,17 +39,19 @@ export default class DynamicIdModule extends BaseModule<T> {
 
         const match = this.regexp.exec(interaction.customId);
 
+        if (!match) return params;
+
         for (const param of this.params) {
-            params[param] = match![this.params.indexOf(param) + 1];
+            params[param] = match[this.params.indexOf(param) + 1];
         }
 
         return params;
     }
 
     async listener(interaction: T, params: { [key: string]: string; }): Promise<void> {
-        if (await this.passesFilterIfExists(interaction as any, params))
+        if (await this.passesFilterIfExists(interaction as ButtonInteraction, params))
             this.execute(interaction, params);
-        else this.callFilterCallbackIfExists(interaction as any, params);
+        else this.callFilterCallbackIfExists(interaction as ButtonInteraction, params);
     }
 
     private validateId(): void {
@@ -59,7 +61,7 @@ export default class DynamicIdModule extends BaseModule<T> {
 
     private createRegexp() {
         const regexp = new RegExp('^' + this.id.replace(dynamicParamRegexp, '(.+)'));
-        const params = this.id.match(paramNameRegexp)!;
+        const params = this.id.match(paramNameRegexp);
         return { regexp, params };
     }
 }
