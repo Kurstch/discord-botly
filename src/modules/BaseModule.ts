@@ -68,5 +68,5 @@ export default abstract class BaseModule<
      * @example
      * const module = modules.find(module => module.matches(...args));
      */
-    abstract matches(param: T): boolean;
+    abstract matches(param: T, ...args: unknown[]): boolean;
 }

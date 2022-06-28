@@ -28,6 +28,6 @@ export function init(config: InitArgs) {
         slashCommandModuleManager = new SlashCommandModuleManager(client, commandsDir);
     if (selectMenuDir)
         new DynamicIdModuleManager(client, selectMenuDir);
-    if (prefixCommandDir && prefix && prefix.length)
+    if (prefixCommandDir && prefix)
         prefixCommandModuleManager = new PrefixCommandModuleManager(prefix, client, prefixCommandDir);
 }

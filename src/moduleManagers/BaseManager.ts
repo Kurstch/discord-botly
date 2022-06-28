@@ -27,19 +27,7 @@ export default abstract class BaseManager<
     modules: M[];
     dir: string;
 
-    /**
-     * @param otherParams parameters that should be set before importing and initializing all modules
-     */
-    constructor(client: Client, dir: string, otherParams?: { [key: string]: string; }) {
-        // Sets properties used by subclass (such as `prefix`)
-        // before modules are imported and initialized
-        if (otherParams) Object
-            .keys(otherParams)
-            .forEach(param =>
-                // @ts-expect-error
-                this[param] = otherParams[param]
-            );
-
+    constructor(client: Client, dir: string) {
         const files = this.readDir(dir);
         const modules = this.importModules(files);
 
