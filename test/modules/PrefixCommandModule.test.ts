@@ -31,10 +31,13 @@ describe('Testing PrefixCommandModule', () => {
     describe('testing matches method', () => {
         it('should return true', () => {
             const module1 = new PrefixCommandModule('test.js', {
+                aliases: ['tst', 't'],
                 execute: () => { },
             });
 
             expect(module1.matches({ content: '!test' } as any, '!')).toBe(true);
+            expect(module1.matches({ content: '!tst' } as any, '!')).toBe(true);
+            expect(module1.matches({ content: '!t' } as any, '!')).toBe(true);
         });
 
         it('should return false', () => {

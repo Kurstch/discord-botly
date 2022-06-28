@@ -6,6 +6,7 @@ export default class PrefixCommandModule extends BaseModule<Message> {
     readonly description?: string;
     readonly category?: string;
     readonly syntax?: string;
+    readonly aliases: string[];
 
     constructor(filename: string, file: BotlyModule<Message>) {
         super(filename, file);
@@ -13,6 +14,7 @@ export default class PrefixCommandModule extends BaseModule<Message> {
         this.description = file.description;
         this.category = file.category;
         this.syntax = file.syntax;
+        this.aliases = file.aliases ?? [];
 
         this.validateCommandData()
     }
@@ -31,9 +33,12 @@ export default class PrefixCommandModule extends BaseModule<Message> {
 
     matches(message: Message, prefix: string): boolean {
         const first = message.content.trimStart().split(' ')[0];
+        const cmd = first.trim().substring(prefix.length);
 
         const hasPrefix = first.startsWith(prefix);
-        const isCommand = first.substring(prefix.length) === this.filenameWithoutExt;
+        const isCommand =
+            cmd === this.filenameWithoutExt
+            || this.aliases.includes(cmd);
 
         if (!hasPrefix) return false;
         if (!isCommand) return false;

@@ -64,10 +64,10 @@ describe('Testing PrefixCommandModuleManager', () => {
         const manager = createManager();
 
         expect(manager.commandData).toContainEqual(
-            { name: 'ping', description: 'Replies with `pong!`', syntax: 'ping', category: 'random' },
+            { name: 'ping', description: 'Replies with `pong!`', syntax: 'ping', category: 'random', aliases: ['p'] },
         );
         expect(manager.commandData).toContainEqual(
-            { name: 'foo', description: undefined, syntax: undefined, category: undefined },
+            { name: 'foo', description: undefined, syntax: undefined, category: undefined, aliases: [] },
         );
     });
 

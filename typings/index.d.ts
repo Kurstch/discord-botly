@@ -111,10 +111,12 @@ interface PrefixCommandModule {
     description?: string;
     category?: string;
     syntax?: string;
+    aliases?: string[];
 }
 
 export interface PrefixCommandData extends PrefixCommandModule {
     name: string;
+    aliases: string[];
 }
 
 /**

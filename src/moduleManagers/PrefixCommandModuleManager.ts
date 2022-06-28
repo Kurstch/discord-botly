@@ -29,6 +29,7 @@ export default class PrefixCommandModuleManager extends BaseManager<Message, Pre
             description: module.description,
             syntax: module.syntax,
             category: module.category,
+            aliases: module.aliases,
         }));
     }
 
