@@ -2,18 +2,10 @@ import PrefixCommandModule from '../../src/modules/PrefixCommandModule';
 import type { BotlyModule } from '../../typings';
 
 describe('Testing PrefixCommandModule', () => {
-    it('should create prefix parameter', () => {
-        const module = new PrefixCommandModule('!', 'test.js', {
-            execute: () => { },
-        });
-
-        expect(module.prefix).toBe('!');
-    });
-
     describe('Testing listener method', () => {
         it('should call execute method with correct args', async () => {
             const execute = jest.fn();
-            const module = new PrefixCommandModule('!', 'test.js', {
+            const module = new PrefixCommandModule('test.js', {
                 execute,
             });
 
@@ -24,7 +16,7 @@ describe('Testing PrefixCommandModule', () => {
 
         it('should call filterCallback method with correct args', async () => {
             const filterCallback = jest.fn();
-            const module = new PrefixCommandModule('!', 'test.js', {
+            const module = new PrefixCommandModule('test.js', {
                 execute: () => { },
                 filter: () => false,
                 filterCallback,
@@ -38,20 +30,20 @@ describe('Testing PrefixCommandModule', () => {
 
     describe('testing matches method', () => {
         it('should return true', () => {
-            const module1 = new PrefixCommandModule('!', 'test.js', {
+            const module1 = new PrefixCommandModule('test.js', {
                 execute: () => { },
             });
 
-            expect(module1.matches({ content: '!test' } as any)).toBe(true);
+            expect(module1.matches({ content: '!test' } as any, '!')).toBe(true);
         });
 
         it('should return false', () => {
-            const module1 = new PrefixCommandModule('!', 'test.js', {
+            const module1 = new PrefixCommandModule('test.js', {
                 execute: () => { },
             });
 
-            expect(module1.matches({ content: 'test' } as any)).toBe(false);
-            expect(module1.matches({ content: '!invalid' } as any)).toBe(false);
+            expect(module1.matches({ content: 'test' } as any, '!')).toBe(false);
+            expect(module1.matches({ content: '!invalid' } as any, '!')).toBe(false);
         });
     })
 
@@ -67,17 +59,17 @@ describe('Testing PrefixCommandModule', () => {
         const invalidCategory = { execute, category: 0 } as unknown as BotlyModule<any>;
 
         it('should not throw', () => {
-            expect(() => new PrefixCommandModule('!', 'someName.js', validDescription)).not.toThrowError();
-            expect(() => new PrefixCommandModule('!', 'someName.js', validSyntax)).not.toThrowError();
-            expect(() => new PrefixCommandModule('!', 'someName.js', validCategory)).not.toThrowError();
+            expect(() => new PrefixCommandModule('someName.js', validDescription)).not.toThrowError();
+            expect(() => new PrefixCommandModule('someName.js', validSyntax)).not.toThrowError();
+            expect(() => new PrefixCommandModule('someName.js', validCategory)).not.toThrowError();
         });
 
         it('should throw error', () => {
             expect(() =>
-                new PrefixCommandModule('!', 'someName.js', invalidDescription)
+                new PrefixCommandModule('someName.js', invalidDescription)
             ).toThrowError();
-            expect(() => new PrefixCommandModule('!', 'someName.js', invalidSyntax)).toThrowError();
-            expect(() => new PrefixCommandModule('!', 'someName.js', invalidCategory)).toThrowError();
+            expect(() => new PrefixCommandModule('someName.js', invalidSyntax)).toThrowError();
+            expect(() => new PrefixCommandModule('someName.js', invalidCategory)).toThrowError();
         });
     });
 });

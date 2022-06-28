@@ -2,6 +2,8 @@ import PrefixCommandModuleManager from '../../src/moduleManagers/PrefixCommandMo
 import PrefixCommandModule from '../../src/modules/PrefixCommandModule';
 import { EventEmitter } from 'events';
 import path from 'path';
+import type { Prefix } from '../../typings';
+import type { Message } from 'discord.js';
 
 const dirPath = path.join(__dirname, '../mock/prefixCommands');
 const createModuleSpy = jest.spyOn(PrefixCommandModuleManager.prototype, 'createModule');
@@ -9,9 +11,9 @@ const addListenerSpy = jest.spyOn(PrefixCommandModuleManager.prototype, 'addList
 const listenerSpy = jest.spyOn(PrefixCommandModule.prototype, 'listener');
 const matchSpy = jest.spyOn(PrefixCommandModule.prototype, 'matches');
 
-function createManager() {
+function createManager(prefix?: Prefix) {
     return new PrefixCommandModuleManager(
-        '!',
+        prefix ?? '!',
         new EventEmitter() as any,
         dirPath
     );
@@ -27,23 +29,23 @@ describe('Testing PrefixCommandModuleManager', () => {
         expect(manager.client.listeners('messageCreate').length).toBe(1);
     });
 
-    it('should call matches', () => {
+    it('should call matches', async () => {
         const manager = createManager();
         const message = { content: '!ping' };
-        const callback = jest.fn((m: any) => manager.client.listeners('messageCreate')[0](m));
+        const callback = manager.client.listeners('messageCreate')[0];
 
-        callback(message);
+        await callback(message)
 
-        expect(matchSpy).toHaveBeenCalledWith(message);
+        expect(matchSpy).toHaveBeenCalledWith(message, '!');
         expect(matchSpy).toBeCalledTimes(2);
     });
 
-    it('should call listener', () => {
+    it('should call listener', async () => {
         const manager = createManager();
         const message = { content: '!ping' };
-        const callback = jest.fn((m: any) => manager.client.listeners('messageCreate')[0](m));
+        const callback = manager.client.listeners('messageCreate')[0];
 
-        callback(message);
+        await callback(message)
 
         expect(listenerSpy).toHaveBeenCalledTimes(1);
         expect(listenerSpy).toHaveBeenCalledWith(message);
@@ -67,5 +69,23 @@ describe('Testing PrefixCommandModuleManager', () => {
         expect(manager.commandData).toContainEqual(
             { name: 'foo', description: undefined, syntax: undefined, category: undefined },
         );
+    });
+
+    describe('testing getPrefix method', () => {
+        const getPrefixSpy = jest.spyOn(PrefixCommandModuleManager.prototype as any, 'getPrefix');
+        const fakeMsg = { content: '' } as Message;
+        afterEach(() => jest.clearAllMocks());
+
+        it('should work when prefix is function', async () => {
+            const prefix = async () => '!';
+            const getPrefixImpl = getPrefixSpy.getMockImplementation()!.bind({ prefix });
+            expect(await getPrefixImpl(fakeMsg)).toBe('!');
+        });
+
+        it('should work when prefix is string', async () => {
+            const prefix = '!';
+            const getPrefixImpl = getPrefixSpy.getMockImplementation()!.bind({ prefix });
+            expect(await getPrefixImpl(fakeMsg)).toBe('!');
+        });
     });
 });
