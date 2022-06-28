@@ -118,15 +118,28 @@ client.login(process.env.TOKEN);
 
 The init method provides Botly the client and points to where the modules are located.
 
-| field                         | value          | description                                                       |
-| ----------------------------- | -------------- | ----------------------------------------------------------------- |
-| client                        | Discord.Client | the used discord.js client                                        |
-| prefix _(optional)_           | string         | the prefix to use for prefix commands                             |
-| eventsDir _(optional)_        | string         | the absolute path to the event module directory                   |
-| commandsDir _(optional)_      | string         | the absolute path to the slash command module directory           |
-| buttonsDir _(optional)_       | string         | the absolute path to the button interaction module directory      |
-| selectMenuDir _(optional)_    | string         | the absolute path to the select menu interaction module directory |
-| prefixCommandDir _(optional)_ | string         | the absolute path to the prefix command module directory          |
+| field                         | value              | description                                                                                                                         |
+| ----------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| client                        | Discord.Client     | the used discord.js client                                                                                                          |
+| prefix _(optional)_           | string \| function | the prefix to use for prefix commands<br/>optionally, this can be a function that returns a string to allow for  per-guild prefixes |
+| eventsDir _(optional)_        | string             | the absolute path to the event module directory                                                                                     |
+| commandsDir _(optional)_      | string             | the absolute path to the slash command module directory                                                                             |
+| buttonsDir _(optional)_       | string             | the absolute path to the button interaction module directory                                                                        |
+| selectMenuDir _(optional)_    | string             | the absolute path to the select menu interaction module directory                                                                   |
+| prefixCommandDir _(optional)_ | string             | the absolute path to the prefix command module directory                                                                            |
+
+If you want your bot to have different prefixes (for prefix commands)
+for different guilds, then you can give a function to the `prefix` field in init function.
+
+The function can be either synchronous or asynchronous, and must return a `string`.
+
+```ts
+botly.init({
+    client,
+    prefix: (message) => database.settings.getPrefix(message.guild.id),
+    prefixCommandDir: path.join(__dirname, './prefixCommands')
+});
+```
 
 ### BotlyModules
 
