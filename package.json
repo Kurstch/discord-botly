@@ -1,6 +1,6 @@
 {
   "name": "discord-botly",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "Discord bot framework",
   "main": "dist/index.js",
   "types": "typings/index.d.ts",
