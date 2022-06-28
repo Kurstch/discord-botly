@@ -29,6 +29,8 @@ export default {
     registerGlobalSlashCommands,
 }
 
+export type Prefix = string | ((message: Message) => Promise<string> | string)
+
 export interface InitArgs {
     /**
      * The Discord client
@@ -37,8 +39,11 @@ export interface InitArgs {
     /**
      * The prefix used for prefix commands.
      * @example "!"
+     * @example ```ts
+     * (guild) => database.settings.getPrefix(guild.id)
+     * ```
      */
-    prefix?: string;
+    prefix?: Prefix;
     /**
      * Absolute path to the Client event directory
      */

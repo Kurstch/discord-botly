@@ -1,24 +1,26 @@
 import PrefixCommandModule from '../modules/PrefixCommandModule';
 import BaseManager from './BaseManager';
 import type { Client, Message } from 'discord.js';
-import type { BotlyModule, PrefixCommandData } from '../../typings';
+import type { BotlyModule, Prefix, PrefixCommandData } from '../../typings';
 
 export default class PrefixCommandModuleManager extends BaseManager<Message, PrefixCommandModule> {
-    prefix!: string;
+    prefix: Prefix;
 
-    constructor(prefix: string, client: Client, dir: string) {
-        super(client, dir, { prefix });
+    constructor(prefix: Prefix, client: Client, dir: string) {
+        super(client, dir);
+        this.prefix = prefix;
     }
 
     addListener(): void {
-        this.client.on('messageCreate', message => {
-            const module = this.modules.find(module => module.matches(message));
+        this.client.on('messageCreate', async message => {
+            const prefix = await this.getPrefix(message);
+            const module = this.modules.find(module => module.matches(message, prefix));
             if (module) module.listener(message);
         });
     }
 
     createModule(filename: string, module: BotlyModule<Message>): PrefixCommandModule {
-        return new PrefixCommandModule(this.prefix, filename, module);
+        return new PrefixCommandModule(filename, module);
     }
 
     get commandData(): PrefixCommandData[] {
@@ -28,5 +30,11 @@ export default class PrefixCommandModuleManager extends BaseManager<Message, Pre
             syntax: module.syntax,
             category: module.category,
         }));
+    }
+
+    private async getPrefix(message: Message): Promise<string> {
+        if (typeof this.prefix === 'string')
+            return this.prefix;
+        else return this.prefix(message);
     }
 }

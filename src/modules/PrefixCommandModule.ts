@@ -3,15 +3,13 @@ import type { Message } from 'discord.js';
 import type { BotlyModule } from '../../typings';
 
 export default class PrefixCommandModule extends BaseModule<Message> {
-    readonly prefix: string;
     readonly description?: string;
     readonly category?: string;
     readonly syntax?: string;
 
-    constructor(prefix: string, filename: string, file: BotlyModule<Message>) {
+    constructor(filename: string, file: BotlyModule<Message>) {
         super(filename, file);
 
-        this.prefix = prefix;
         this.description = file.description;
         this.category = file.category;
         this.syntax = file.syntax;
@@ -20,11 +18,9 @@ export default class PrefixCommandModule extends BaseModule<Message> {
     }
 
     async listener(message: Message): Promise<void> {
-        const parts = message.content
+        const args = message.content
             .trim()
-            .substring(this.prefix.length)
-            .split(' ');
-        const args = parts
+            .split(' ')
             .slice(1)
             .filter(s => !!s.length);
 
@@ -33,11 +29,11 @@ export default class PrefixCommandModule extends BaseModule<Message> {
         else this.callFilterCallbackIfExists(message, args);
     }
 
-    matches(message: Message): boolean {
+    matches(message: Message, prefix: string): boolean {
         const first = message.content.trimStart().split(' ')[0];
 
-        const hasPrefix = first.startsWith(this.prefix);
-        const isCommand = first.substring(this.prefix.length) === this.filenameWithoutExt;
+        const hasPrefix = first.startsWith(prefix);
+        const isCommand = first.substring(prefix.length) === this.filenameWithoutExt;
 
         if (!hasPrefix) return false;
         if (!isCommand) return false;

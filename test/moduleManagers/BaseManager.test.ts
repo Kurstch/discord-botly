@@ -10,8 +10,8 @@ class DummyBaseManager extends BaseManager<any, any> {
 }
 
 const dirPath = path.join(__dirname, '../mock/commands');
-const createManager = (customDirPath?: string, options?: any): DummyBaseManager => {
-    return new DummyBaseManager({} as any, customDirPath ?? dirPath, options);
+const createManager = (customDirPath?: string): DummyBaseManager => {
+    return new DummyBaseManager({} as any, customDirPath ?? dirPath);
 };
 
 describe('Testing BaseManager', () => {
@@ -19,12 +19,6 @@ describe('Testing BaseManager', () => {
     const readDirSpy = jest.spyOn(DummyBaseManager.prototype as any, 'readDir');
 
     afterEach(() => jest.clearAllMocks());
-
-    it('should set Custom params', () => {
-        const manager = createManager(dirPath, { prefix: '!' });
-        //@ts-ignore
-        expect(manager.prefix).toBe('!');
-    });
 
     it('should get all javascript files from the mock directory', () => {
         createManager();
