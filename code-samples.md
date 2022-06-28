@@ -42,7 +42,17 @@ export const { commandData, execute }: BotlyModule<CommandInteraction> = {
 import type { Message } from 'discord.js'
 import type { BotlyModule } from 'discord-botly'
 
-export const { execute }: BotlyModule<Message> = {
+export const {
+    execute,
+    description, // optional
+    syntax,      // optional
+    category,    // optional
+    aliases      // optional
+}: BotlyModule<Message> = {
+    description: 'See all available commands', // optional
+    syntax: 'help <category>',                 // optional
+    category: 'general',                       // optional
+    aliases: ['h'],                            // optional
     async execute(message, args) {
         const name = args[0]
         if (!name) await message.reply('Please mention a name!');
@@ -127,7 +137,8 @@ import { BotlyModule, PrefixCommandData, prefixCommandData } from 'discord-botly
 function commandToDescription(command: PrefixCommandData): string {
     const descriptionStr = command.description ? ` - ${command.description}` : ''
     const syntaxStr = command.syntax ? ` - ${command.syntax}` : ''
-    return `**${command.name}**${descriptionStr}${syntaxStr}`
+    const aliasesStr = command.aliases.length ? `\naliases: ${command.aliases.join(', ')}` : ''
+    return `**${command.name}**${descriptionStr}${syntaxStr}${aliasesStr}`
 }
 
 export const { execute, description, syntax }: BotlyModule<Message> = {

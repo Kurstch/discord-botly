@@ -181,15 +181,16 @@ For more detailed samples see [code-samples.md](code-samples.md)
 
 Discord Botly searches for specific `exports` in the BotlyModule files:
 
-| export name    | type                           | module type    | required | description                                                                                          |
-| -------------- | ------------------------------ | -------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| execute        | function                       | *              | true     | can run any code, for example, replies 'pong' for '/ping' command                                    |
-| filter         | function                       | *              | false    | checks wether execute can be called, returns a `boolean`                                             |
-| filterCallback | function                       | *              | false    | called when the `filter` function fails                                                              |
-| commandData    | instanceof SlashCommandBuilder | slash command  | true     | the slash command data, use [@discordjs/builders](https://www.npmjs.com/package/@discordjs/builders) |
-| description    | string                         | prefix command | false    | a description of the prefix command, used for [prefixCommandData](#prefix-command-data)              |
-| syntax         | string                         | prefix command | false    | the syntax for the prefix command, used for [prefixCommandData](#prefix-command-data)                |
-| category       | string                         | prefix command | false    | what category the prefix command is in, used for [prefixCommandData](#prefix-command-data)           |
+| export name    | type                           | module type    | required | description                                                                                                            |
+| -------------- | ------------------------------ | -------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| execute        | function                       | *              | true     | can run any code, for example, replies 'pong' for '/ping' command                                                      |
+| filter         | function                       | *              | false    | checks wether execute can be called, returns a `boolean`                                                               |
+| filterCallback | function                       | *              | false    | called when the `filter` function fails                                                                                |
+| commandData    | instanceof SlashCommandBuilder | slash command  | true     | the slash command data, use [@discordjs/builders](https://www.npmjs.com/package/@discordjs/builders)                   |
+| description    | string                         | prefix command | false    | a description of the prefix command, used for [prefixCommandData](#prefix-command-data)                                |
+| syntax         | string                         | prefix command | false    | the syntax for the prefix command, used for [prefixCommandData](#prefix-command-data)                                  |
+| category       | string                         | prefix command | false    | what category the prefix command is in, used for [prefixCommandData](#prefix-command-data)                             |
+| aliases        | string[]                       | prefix command | false    | aliases for the command (eg. `!balance` command may have an alias of `!bal`) [prefixCommandData](#prefix-command-data) |
 
 #### Callback Parameters
 
@@ -283,14 +284,14 @@ import { prefixCommandData } from 'discord-botly'
 console.log(prefixCommandData())
 /*
     Logs: [
-        { name: 'help', description: 'See available commands', syntax: 'help', category: undefined },
-        { name: 'ban', description: 'Ban a member', syntax: 'ban @member', category: 'admin' },
-        { name: 'coin', description: 'Toss a coin', syntax: 'coin', category: 'games' },
+        { name: 'help', description: 'See available commands', syntax: 'help', category: undefined, aliases: ['h'] },
+        { name: 'ban', description: 'Ban a member', syntax: 'ban @member', category: 'admin', aliases: [] },
+        { name: 'coin', description: 'Toss a coin', syntax: 'coin', category: 'games', aliases: ['c'] },
     ]
 */
 ```
 
-The `name`, `description`, `syntax` and `category` are automatically
+The `name`, `description`, `syntax`, `category` and `aliases` are automatically
 gathered from the prefix command modules.
 
 The `name` comes from the filename, and the rest comes from exports.
@@ -306,10 +307,12 @@ export const {
     category,
     description,
     syntax,
+    aliases,
 }: BotlyModule<Message> = {
     description: 'Replies with a greeting',
     syntax: '!hello <name>',
     category: 'games',
+    aliases: ['c'],
     execute: message => message.reply(Math.random() > 0.5 ? 'You got tails!' : 'You got heads!'),
 }
 ```
