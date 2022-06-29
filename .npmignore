@@ -2,3 +2,5 @@ src
 tsconfig.json
 .vscode
 .github
+test
+jest.config.js
