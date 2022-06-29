@@ -7,9 +7,10 @@ export default abstract class BaseModule<
     // The args type is set as `any[]` rather than `FuncParams<T>`
     // because the latter causes massive slowdowns when editing in an IDE
     // no idea why ¯\_(ツ)_/¯
-    protected readonly execute: (...args: unknown[]) => void;
-    protected readonly filter?: (...args: unknown[]) => Promise<boolean> | boolean;
-    protected readonly filterCallback?: (...args: unknown[]) => void;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    protected readonly execute: (...args: any[]) => void;
+    protected readonly filter?: (...args: any[]) => Promise<boolean> | boolean;
+    protected readonly filterCallback?: (...args: any[]) => void;
 
     readonly filename: string;
     readonly filenameWithoutExt: string;
