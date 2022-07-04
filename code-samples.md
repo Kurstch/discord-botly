@@ -100,29 +100,18 @@ export const { execute }: BotlyModule<SelectMenuInteraction> = {
 ## Filters
 
 ```ts
-// prefixCommands/admin/ban.ts
+// prefixCommands/admin/__filter.ts
 
-import type { Message } from 'discord.js'
-import type { BotlyModule } from 'discord-botly'
+import { Message } from 'discord.js';
+import database from '../../database';
 
-export const { execute, filter, filterCallback }: BotlyModule<Message> = {
-    async filter(message) {
-        return (
-            !!message.guild &&
-            !!message.mentions.members &&
-            !!message.mentions.members.size &&
-            message.author.id === message.guild.ownerId
-        )
-    },
-
-    async filterCallback(message) {
-        await message.reply('You are not allowed to use this command')
-    },
-
-    async execute(message) {
-        const member = message.mentions.members!.first()!
-        member.ban()
+export default async function(message: Message): Promise<boolean> {
+    const { adminUsers } = await database.settings.getAdminUsers(message.guildId!);
+    if (!adminUsers.includes(message.author.id)) {
+        await message.reply('You do not have permission to use this command');
+        return false;
     }
+    else return true;
 }
 ```
 

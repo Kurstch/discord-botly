@@ -17,6 +17,7 @@ Discord Botly is a Discord Bot framework that wraps the [Discord.js](https://git
     - [Callback parameters](#callback-parameters)
     - [The filename is important!](#the-filename-is-important)
     - [Dynamic parameter Ids](#dynamic-parameter-ids)
+  - [Filter Modules](#filter-modules)
   - [Utils](#utils)
     - [Registering slash commands](#registering-slash-commands)
     - [Prefix Command Data](#prefix-command-data)
@@ -38,6 +39,7 @@ Discord Botly is a Discord Bot framework that wraps the [Discord.js](https://git
 3. Botly provides multiple utilities, such as:
     - Methods for registering slash commands (so you don't have to mess around with the Discord API)
     - For `ButtonInteraction` and `SelectMenuInteraction` you can use [Dynamic parameter ids](#dynamic-parameter-ids)
+    - You can make [filter modules](#filter-modules), which are filters that automatically get applied to [Botly Modules](#botlymodules)
     - Prefix command data is automatically gathered into one constant so you don't have to write help command manually,
       see [prefixCommandData](#prefix-command-data)
 
@@ -49,6 +51,7 @@ The project code may look something like this:
 |   |-ping.ts
 |   |-balance.ts
 |   └─admin
+|       |-__filter.ts
 |       └─ban.ts
 |
 |-events
@@ -65,6 +68,7 @@ The project code may look something like this:
 |   └─give-[userId]-role.ts
 |
 |-prefixCommands
+|   |-__filter.ts
 |   |-ping.ts
 |   └─help.ts
 |
@@ -163,11 +167,6 @@ import type { BotlyModule } from 'discord-botly'
 export const {
     // Must be exported by all modules
     execute,
-    // (Optional) checks wether execute can be called, returns a boolean
-    // For example, check wether user is admin before allowing to use `ban` command
-    filter,
-    // (Optional) called when the `filter` function fails
-    filterCallback,
     // (Required only for slash commands) Used only for slash commands
     commandData,
 }: BotlyModule<moduleType> = {
@@ -184,8 +183,6 @@ Discord Botly searches for specific `exports` in the BotlyModule files:
 | export name    | type                           | module type    | required | description                                                                                                            |
 | -------------- | ------------------------------ | -------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
 | execute        | function                       | *              | true     | can run any code, for example, replies 'pong' for '/ping' command                                                      |
-| filter         | function                       | *              | false    | checks wether execute can be called, returns a `boolean`                                                               |
-| filterCallback | function                       | *              | false    | called when the `filter` function fails                                                                                |
 | commandData    | instanceof SlashCommandBuilder | slash command  | true     | the slash command data, use [@discordjs/builders](https://www.npmjs.com/package/@discordjs/builders)                   |
 | description    | string                         | prefix command | false    | a description of the prefix command, used for [prefixCommandData](#prefix-command-data)                                |
 | syntax         | string                         | prefix command | false    | the syntax for the prefix command, used for [prefixCommandData](#prefix-command-data)                                  |
@@ -249,6 +246,59 @@ export const { execute }: BotlyModule<ButtonInteraction> = {
     }
 }
 ```
+
+### Filter Modules
+
+If you need create filters for multiple [Botly Modules](#botlymodules),
+such as checking that the user can use admin commands,
+you can use `filter modules`.
+
+Filter modules are files with the name `__filter.(js/ts)` that export a filter function.
+The filter gets applied to all [Botly Modules](#botlymodules)
+in the directory and its sub-directories.
+
+```txt
+prefixCommands
+    |-admin
+    |   | __filter.ts
+    |   |-ban.ts
+    |   └─kick.ts
+    |
+    |-__filter.ts
+    |-ping.ts
+    └─help.ts
+```
+
+In this example we have 2 filter modules:
+
+- prefixCommands/__filter.ts
+- prefixCommands/admin/__filter.ts
+
+Since `prefixCommands/__filter.ts` is in the prefixCommands directory,
+it gets applied to all prefix commands.
+
+`prefixCommands/admin/__filter.ts` however,
+gets applied ony to commands in the `admin` directory.
+
+The actual code is super simple: it's just a function that returns a `boolean`
+or `Promise<boolean>`. The function must be a default export.
+
+```ts
+// Example of `prefixCommands/admin/__filter.ts`
+export default async function(message: Message): Promise<boolean> {
+    const { adminUsers } = await database.settings.getAdminUsers(message.guildId!);
+    if (!adminUsers.includes(message.author.id)) {
+        await message.reply('You do not have permission to use this command');
+        return false;
+    }
+    else return true;
+}
+```
+
+The above example for `prefixCommands/admin/__filter.ts` would check whether
+the message author is an admin the guild and return true or false appropriately.
+This filter would be applied to all commands in the `admin` directory and
+any sub-directories.
 
 ### Utils
 
