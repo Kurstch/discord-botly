@@ -1,11 +1,15 @@
 import PrefixCommandModule from '../../src/modules/PrefixCommandModule';
+import dummyManager from '../mock/dummyManager';
 import type { BotlyModule } from '../../typings';
+import type PrefixCommandModuleManager from '../../src/moduleManagers/PrefixCommandModuleManager';
+
+const dm = dummyManager as PrefixCommandModuleManager;
 
 describe('Testing PrefixCommandModule', () => {
     describe('Testing listener method', () => {
         it('should call execute method with correct args', async () => {
             const execute = jest.fn();
-            const module = new PrefixCommandModule('test.js', {
+            const module = new PrefixCommandModule(dm, 'test.js', {
                 execute,
             });
 
@@ -16,7 +20,7 @@ describe('Testing PrefixCommandModule', () => {
 
         it('should call filterCallback method with correct args', async () => {
             const filterCallback = jest.fn();
-            const module = new PrefixCommandModule('test.js', {
+            const module = new PrefixCommandModule(dm, 'test.js', {
                 execute: () => { },
                 filter: () => false,
                 filterCallback,
@@ -30,7 +34,7 @@ describe('Testing PrefixCommandModule', () => {
 
     describe('testing matches method', () => {
         it('should return true', () => {
-            const module1 = new PrefixCommandModule('test.js', {
+            const module1 = new PrefixCommandModule(dm, 'test.js', {
                 aliases: ['tst', 't'],
                 execute: () => { },
             });
@@ -41,7 +45,7 @@ describe('Testing PrefixCommandModule', () => {
         });
 
         it('should return false', () => {
-            const module1 = new PrefixCommandModule('test.js', {
+            const module1 = new PrefixCommandModule(dm, 'test.js', {
                 execute: () => { },
             });
 
@@ -62,17 +66,17 @@ describe('Testing PrefixCommandModule', () => {
         const invalidCategory = { execute, category: 0 } as unknown as BotlyModule<any>;
 
         it('should not throw', () => {
-            expect(() => new PrefixCommandModule('someName.js', validDescription)).not.toThrowError();
-            expect(() => new PrefixCommandModule('someName.js', validSyntax)).not.toThrowError();
-            expect(() => new PrefixCommandModule('someName.js', validCategory)).not.toThrowError();
+            expect(() => new PrefixCommandModule(dm, 'someName.js', validDescription)).not.toThrowError();
+            expect(() => new PrefixCommandModule(dm, 'someName.js', validSyntax)).not.toThrowError();
+            expect(() => new PrefixCommandModule(dm, 'someName.js', validCategory)).not.toThrowError();
         });
 
         it('should throw error', () => {
             expect(() =>
-                new PrefixCommandModule('someName.js', invalidDescription)
+                new PrefixCommandModule(dm, 'someName.js', invalidDescription)
             ).toThrowError();
-            expect(() => new PrefixCommandModule('someName.js', invalidSyntax)).toThrowError();
-            expect(() => new PrefixCommandModule('someName.js', invalidCategory)).toThrowError();
+            expect(() => new PrefixCommandModule(dm, 'someName.js', invalidSyntax)).toThrowError();
+            expect(() => new PrefixCommandModule(dm, 'someName.js', invalidCategory)).toThrowError();
         });
     });
 });

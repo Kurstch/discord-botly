@@ -1,12 +1,13 @@
 import BaseModule from './BaseModule';
 import type { CommandInteraction } from 'discord.js';
 import type { BotlyModule, CommandData } from '../../typings';
+import type SlashCommandModuleManager from '../moduleManagers/SlashCommandModuleManager';
 
-export default class SlashCommandModule extends BaseModule<CommandInteraction> {
+export default class SlashCommandModule extends BaseModule<CommandInteraction, SlashCommandModuleManager> {
     commandData: CommandData;
 
-    constructor(commandData: CommandData, filename: string, file: BotlyModule<CommandInteraction>) {
-        super(filename, file);
+    constructor(manager: SlashCommandModuleManager, commandData: CommandData, filepath: string, file: BotlyModule<CommandInteraction>) {
+        super(manager, filepath, file);
         this.commandData = commandData;
         this.validateCommandData();
     }

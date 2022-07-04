@@ -1,21 +1,22 @@
 import BaseModule from './BaseModule';
 import type { ButtonInteraction, SelectMenuInteraction } from 'discord.js';
 import type { BotlyModule } from '../../typings';
+import type DynamicIdModuleManager from '../moduleManagers/DynamicIdModuleManager';
 
 const paramNameRegexp = /(?<=\[).+?(?=\])/g;
 const dynamicParamRegexp = /\[.+?\]/g;
 
 type T = ButtonInteraction | SelectMenuInteraction;
 
-export default class DynamicIdModule extends BaseModule<T> {
+export default class DynamicIdModule extends BaseModule<T, DynamicIdModuleManager> {
     id: string;
     regexp: RegExp;
     params: RegExpMatchArray | null;
 
-    constructor(filename: string, file: BotlyModule<T>) {
-        super(filename, file);
+    constructor(manager: DynamicIdModuleManager, filepath: string, file: BotlyModule<T>) {
+        super(manager, filepath, file);
 
-        this.id = filename.split('.js')[0];
+        this.id = this.filenameWithoutExt;
 
         const { regexp, params } = this.createRegexp();
 

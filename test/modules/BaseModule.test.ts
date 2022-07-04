@@ -1,11 +1,11 @@
 import { Message } from 'discord.js';
 import BaseModule from '../../src/modules/BaseModule';
-
+import dummyManager from '../mock/dummyManager';
 import type { BotlyModule, FuncParams, ModuleTypes } from '../../typings';
 
 // Because BaseModule is and abstract class, we can't test it directly.
 // Instead, we'll create a subclass and test that.
-class DummyBaseModule<T extends ModuleTypes> extends BaseModule<T> {
+class DummyBaseModule<T extends ModuleTypes> extends BaseModule<T, any> {
     // This method is only defined because it's an abstract method.
     // It's not actually used in the test.
     // @ts-ignore
@@ -37,7 +37,7 @@ describe('Testing BaseModule', () => {
         const execute = () => { };
         const filter = () => true;
         const filterCallback = () => { };
-        const testModule = new DummyBaseModule('name.js', { execute, filter, filterCallback });
+        const testModule = new DummyBaseModule(dummyManager, 'name.js', { execute, filter, filterCallback });
 
         expect(testModule).toBeDefined();
         expect(testModule.filename).toBe('name.js');
@@ -55,43 +55,65 @@ describe('Testing BaseModule', () => {
         const invalidFilterCallback = { filterCallback: '' } as unknown as BotlyModule<any>;
 
         it('should validate', () => {
-            expect(() => new DummyBaseModule('test.js', moduleWithExecute)).not.toThrow();
-            expect(() => new DummyBaseModule('test.js', moduleWithFilter)).not.toThrow();
-            expect(() => new DummyBaseModule('test.js', moduleWithFilterCallback)).not.toThrow();
+            expect(() => new DummyBaseModule(dummyManager, 'test.js', moduleWithExecute)).not.toThrow();
+            expect(() => new DummyBaseModule(dummyManager, 'test.js', moduleWithFilter)).not.toThrow();
+            expect(() => new DummyBaseModule(dummyManager, 'test.js', moduleWithFilterCallback)).not.toThrow();
         });
 
         it('should throw error when validating', () => {
-            expect(() => new DummyBaseModule('test.js', invalidExecute)).toThrowError();
-            expect(() => new DummyBaseModule('test.js', invalidFilter)).toThrowError();
-            expect(() => new DummyBaseModule('test.js', invalidFilterCallback)).toThrowError();
+            expect(() => new DummyBaseModule(dummyManager, 'test.js', invalidExecute)).toThrowError();
+            expect(() => new DummyBaseModule(dummyManager, 'test.js', invalidFilter)).toThrowError();
+            expect(() => new DummyBaseModule(dummyManager, 'test.js', invalidFilterCallback)).toThrowError();
         });
     });
 
     describe('Testing passesFilterIfExists method', () => {
-        const noFilterModule = new DummyBaseModule('test.js', { execute: () => { } });
+        const noFilterModule = new DummyBaseModule(dummyManager, 'root/test/test.js', { execute: () => { } });
         let filterModule: DummyBaseModule<Message>;
 
         beforeEach(() => {
-            filterModule = new DummyBaseModule('test.js', {
+            filterModule = new DummyBaseModule(dummyManager, 'root/test/test.js', {
                 execute: () => { },
                 filter: (_, args) => !!args.length,
             });
         });
 
-        it('should pass filter', async () => {
+        it('should pass when there is no filter', async () => {
+            const manager = { ...dummyManager };
+            const module = new DummyBaseModule(manager, 'root/test/test.js', { execute: () => { } });
+            expect(await module.test_passesFilterIfExists()).toBe(true);
+
+            // Will be dropped in v2.0.0
             expect(await noFilterModule.test_passesFilterIfExists()).toBe(true);
+        });
+
+        it('should pass when there is a filter', async () => {
+            const manager = { ...dummyManager };
+            manager.filters.set('root/test/__filter.js', () => true);
+            const module = new DummyBaseModule(manager, 'root/test/test.js', { execute: () => { } });
+
+            expect(await module.test_passesFilterIfExists()).toBe(true);
+
+            // Will be dropped in v2.0.0
             expect(await filterModule.test_passesFilterIfExists({} as any, [''])).toBe(true);
         });
 
         it('should fail filter', async () => {
+            const manager = { ...dummyManager };
+            manager.filters.set('root/__filter.js', () => false);
+            const module = new DummyBaseModule(manager, 'root/test/test.js', { execute: () => { } });
+
+            expect(await module.test_passesFilterIfExists()).toBe(false);
+
+            // Will be dropped in v2.0.0
             expect(await filterModule.test_passesFilterIfExists({} as any, [])).toBe(false);
         });
     });
 
     it('should call filter callback if it exists', async () => {
         const callback = jest.fn();
-        const moduleWithoutCallback = new DummyBaseModule<Message>('test.js', { execute: () => { } });
-        const moduleWithCallback = new DummyBaseModule<Message>('test.js', {
+        const moduleWithoutCallback = new DummyBaseModule<Message>({} as any, 'test.js', { execute: () => { } });
+        const moduleWithCallback = new DummyBaseModule<Message>({} as any, 'test.js', {
             execute: () => { },
             filterCallback: callback,
         });
@@ -109,7 +131,7 @@ describe('Testing BaseModule', () => {
         });
 
         it('call passesFilterIfExists from listener', async () => {
-            const testModule = new DummyBaseModule<Message>('test.js', {
+            const testModule = new DummyBaseModule<Message>(dummyManager, 'test.js', {
                 execute: () => { },
                 filter: callback,
             });
@@ -119,14 +141,14 @@ describe('Testing BaseModule', () => {
         });
 
         it('call execute from listener', async () => {
-            const testModule = new DummyBaseModule<Message>('test.js', { execute: callback });
+            const testModule = new DummyBaseModule<Message>(dummyManager, 'test.js', { execute: callback });
 
             await testModule.listener({} as any, ['']);
             expect(callback).toHaveBeenCalled();
         });
 
         it('call execute from listener', async () => {
-            const testModule = new DummyBaseModule<Message>('test.js', {
+            const testModule = new DummyBaseModule<Message>(dummyManager, 'test.js', {
                 execute: () => { },
                 filter: () => false,
                 filterCallback: callback,

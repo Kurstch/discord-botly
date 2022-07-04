@@ -19,8 +19,8 @@ export default class PrefixCommandModuleManager extends BaseManager<Message, Pre
         });
     }
 
-    createModule(filename: string, module: BotlyModule<Message>): PrefixCommandModule {
-        return new PrefixCommandModule(filename, module);
+    createModule(filepath: string, module: BotlyModule<Message>): PrefixCommandModule {
+        return new PrefixCommandModule(this, filepath, module);
     }
 
     get commandData(): PrefixCommandData[] {
