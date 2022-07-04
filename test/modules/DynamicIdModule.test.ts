@@ -1,6 +1,10 @@
+import { ButtonInteraction } from 'discord.js';
 import DynamicIdModule from '../../src/modules/DynamicIdModule';
-import type { ButtonInteraction } from 'discord.js';
+import dummyManager from '../mock/dummyManager';
 import type { BotlyModule } from '../../typings/index';
+import type DynamicIdModuleManager from '../../src/moduleManagers/DynamicIdModuleManager';
+
+const dm = dummyManager as DynamicIdModuleManager;
 
 describe('Testing DynamicIdModule', () => {
     const moduleData: BotlyModule<ButtonInteraction> = {
@@ -20,16 +24,16 @@ describe('Testing DynamicIdModule', () => {
 
     describe('Testing matches method', () => {
         it('should return true', () => {
-            const module1 = new DynamicIdModule('test.js', moduleData);
-            const module2 = new DynamicIdModule('test-[id].js', moduleData);
+            const module1 = new DynamicIdModule(dm, 'test.js', moduleData);
+            const module2 = new DynamicIdModule(dm, 'test-[id].js', moduleData);
 
             expect(module1.matches({ customId: 'test' } as ButtonInteraction)).toBe(true);
             expect(module2.matches({ customId: 'test-1234' } as ButtonInteraction)).toBe(true);
         });
 
         it('should return false', () => {
-            const module1 = new DynamicIdModule('test.js', moduleData);
-            const module2 = new DynamicIdModule('test-[id].js', moduleData);
+            const module1 = new DynamicIdModule(dm, 'test.js', moduleData);
+            const module2 = new DynamicIdModule(dm, 'test-[id].js', moduleData);
 
             expect(module1.matches({ customId: 'invalid' } as ButtonInteraction)).toBe(false);
             expect(module2.matches({ customId: 'test' } as ButtonInteraction)).toBe(false);
@@ -39,7 +43,7 @@ describe('Testing DynamicIdModule', () => {
     describe('Testing listener method', () => {
         it('should call execute method', async () => {
             const callback = jest.fn();
-            const module = new DynamicIdModule('test.js', {
+            const module = new DynamicIdModule(dm, 'test.js', {
                 execute: callback,
             });
 
@@ -49,7 +53,7 @@ describe('Testing DynamicIdModule', () => {
 
         it('should call callFilterCallbackIfExists', async () => {
             const callback = jest.fn();
-            const module = new DynamicIdModule('test.js', {
+            const module = new DynamicIdModule(dm, 'test.js', {
                 execute: () => { },
                 filter: () => false,
                 filterCallback: callback,
@@ -63,17 +67,17 @@ describe('Testing DynamicIdModule', () => {
     describe('Testing validateId method', () => {
         it('should pass validation', () => {
             expect(
-                () => new DynamicIdModule('id-without-params.js', moduleData)
+                () => new DynamicIdModule(dm, 'id-without-params.js', moduleData)
             ).not.toThrow();
 
             expect(
-                () => new DynamicIdModule('id-with-params-[id].js', moduleData)
+                () => new DynamicIdModule(dm, 'id-with-params-[id].js', moduleData)
             ).not.toThrow();
         });
 
         it('should fail validation', () => {
             expect(
-                () => new DynamicIdModule('id-with-duplicate-params-[id]-[id].js', moduleData)
+                () => new DynamicIdModule(dm, 'id-with-duplicate-params-[id]-[id].js', moduleData)
             ).toThrow();
         });
     });
