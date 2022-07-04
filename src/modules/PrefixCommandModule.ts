@@ -1,15 +1,16 @@
 import BaseModule from './BaseModule';
 import type { Message } from 'discord.js';
 import type { BotlyModule } from '../../typings';
+import type PrefixCommandModuleManager from '../moduleManagers/PrefixCommandModuleManager';
 
-export default class PrefixCommandModule extends BaseModule<Message> {
+export default class PrefixCommandModule extends BaseModule<Message, PrefixCommandModuleManager> {
     readonly description?: string;
     readonly category?: string;
     readonly syntax?: string;
     readonly aliases: string[];
 
-    constructor(filename: string, file: BotlyModule<Message>) {
-        super(filename, file);
+    constructor(manager: PrefixCommandModuleManager, filepath: string, file: BotlyModule<Message>) {
+        super(manager, filepath, file);
 
         this.description = file.description;
         this.category = file.category;

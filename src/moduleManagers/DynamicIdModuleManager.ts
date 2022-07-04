@@ -14,7 +14,7 @@ export default class DynamicIdModuleManager extends BaseManager<T, DynamicIdModu
         });
     }
 
-    createModule(filename: string, module: BotlyModule<T>): DynamicIdModule {
-        return new DynamicIdModule(filename, module);
+    createModule(filepath: string, module: BotlyModule<T>): DynamicIdModule {
+        return new DynamicIdModule(this, filepath, module);
     }
 }

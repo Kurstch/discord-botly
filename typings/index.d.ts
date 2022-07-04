@@ -89,6 +89,8 @@ export type FuncParams<T extends ModuleTypes> =
 
 export type CommandData = SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
 
+export type FilterFunction<T extends ModuleTypes> = (...args: FuncParams<T>) => boolean | Promise<boolean>;
+
 /**
  * Module code structure
  */
@@ -99,7 +101,9 @@ export type BotlyModule<T extends ModuleTypes> =
 
 interface BotlyModuleCoreFunctions<T extends ModuleTypes> {
     execute: (...args: FuncParams<T>) => void;
+    /** @deprecated Will be removed in v2.0.0 in favor of filter modules (see README#filter-modules, [issue#42](https://github.com/Kurstch/discord-botly/issues/42)) */
     filter?: (...args: FuncParams<T>) => boolean | Promise<boolean>;
+    /** @deprecated Will be removed in v2.0.0 in favor of filter modules (see README#filter-modules, [issue#42](https://github.com/Kurstch/discord-botly/issues/42)) */
     filterCallback?: (...args: FuncParams<T>) => void;
 }
 

@@ -14,8 +14,8 @@ export default class SlashCommandModuleManager extends BaseManager<CommandIntera
         });
     }
 
-    createModule(filename: string, module: BotlyModule<CommandInteraction>): SlashCommandModule {
-        return new SlashCommandModule(module.commandData, filename, module);
+    createModule(filepath: string, module: BotlyModule<CommandInteraction>): SlashCommandModule {
+        return new SlashCommandModule(this, module.commandData, filepath, module);
     }
 
     /**
