@@ -285,7 +285,7 @@ or `Promise<boolean>`. The function must be a default export. The parameters pas
 to the filter function depend on the directory
 (see [callback parameters](#callback-parameters)) ie. filter in prefixCommands dir
 will recieve `message: Message, args: string[]`, slashCommand: `interaction: CommandInteraction` etc.
-
+You can use `FilterFunction` type exported from `discord-botly` ([code sample](code-samples.md#filters)).
 
 ```ts
 // Example of `prefixCommands/admin/__filter.ts`
