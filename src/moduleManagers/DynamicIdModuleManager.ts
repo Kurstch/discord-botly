@@ -10,7 +10,7 @@ export default class DynamicIdModuleManager extends BaseManager<T, DynamicIdModu
         this.client.on('interactionCreate', interaction => {
             if (!interaction.isButton() && !interaction.isSelectMenu()) return;
             const module = this.modules.find(module => module.matches(interaction));
-            if (module) module.listener(interaction, module.getParams(interaction));
+            if (module) module.listener(interaction as ButtonInteraction, module.getParams(interaction));
         });
     }
 
