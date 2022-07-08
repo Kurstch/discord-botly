@@ -13,7 +13,7 @@ describe('Testing PrefixCommandModule', () => {
                 execute,
             });
 
-            await module.listener({ content: '!test 1234' } as any);
+            await module.listener({ content: '!test 1234' } as any, ['1234']);
             expect(execute).toHaveBeenCalled();
             expect(execute).toHaveBeenCalledWith({ content: '!test 1234' } as any, ['1234']);
         });
@@ -26,7 +26,7 @@ describe('Testing PrefixCommandModule', () => {
                 filterCallback,
             });
 
-            await module.listener({ content: '!test 1234' } as any);
+            await module.listener({ content: '!test 1234' } as any, ['1234']);
             expect(filterCallback).toHaveBeenCalled();
             expect(filterCallback).toHaveBeenCalledWith({ content: '!test 1234' } as any, ['1234']);
         })
