@@ -115,6 +115,16 @@ export default async function(message: Message): Promise<boolean> {
 }
 ```
 
+```ts
+// ALTERNATIVELY
+// prefixCommands/admin/__filter.ts
+
+import type { Message } from 'discord.js';
+import type { FilterFunction } from 'discord-botly';
+
+const filter: FilterFunction<Message> = async message => {}
+```
+
 ## Catchers
 
 ```ts

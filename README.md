@@ -194,7 +194,7 @@ Discord Botly searches for specific `exports` in the BotlyModule files:
 
 #### Callback Parameters
 
-The parameters given to the `execute`, `filter` and `filterCallback` functions depend on the type of module.
+The parameters given to the `execute` function as well as [filter modules](#filter-modules) depend on the type of module.
 
 | module type    | parameters                                                                           |
 | -------------- | ------------------------------------------------------------------------------------ |
@@ -284,7 +284,11 @@ it gets applied to all prefix commands.
 gets applied ony to commands in the `admin` directory.
 
 The actual code is super simple: it's just a function that returns a `boolean`
-or `Promise<boolean>`. The function must be a default export.
+or `Promise<boolean>`. The function must be a default export. The parameters passed
+to the filter function depend on the directory
+(see [callback parameters](#callback-parameters)) ie. filter in prefixCommands dir
+will recieve `message: Message, args: string[]`, slashCommand: `interaction: CommandInteraction` etc.
+You can use `FilterFunction` type exported from `discord-botly` ([code sample](code-samples.md#filters)).
 
 ```ts
 // Example of `prefixCommands/admin/__filter.ts`
