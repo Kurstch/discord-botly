@@ -22,7 +22,7 @@ jobs:
         with:
           tag-prefix: v
           commit-message: 'Bump version to {{version}}'
-          patch-wording: 'fix,docs,patch,style,refractor,chore,perf,test,build'
+          patch-wording: 'fix,docs,patch,style,refactor,chore,perf,test,build'
           minor-wording: 'feat'
           major-wording: 'BREAKING CHANGE,MAJOR'
       - name: cat package.json
