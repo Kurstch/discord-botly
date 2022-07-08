@@ -21,7 +21,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag-prefix: v
-          target-branch: main
           commit-message: 'Bump version to {{version}}'
           patch-wording: 'fix,docs,patch,style,refractor,chore,perf,test,build'
           minor-wording: 'feat'
