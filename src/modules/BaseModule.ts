@@ -20,11 +20,11 @@ export default abstract class BaseModule<
     // because the latter causes massive slowdowns when editing in an IDE
     // no idea why ¯\_(ツ)_/¯
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    protected readonly execute: (...args: any[]) => void;
+    protected readonly execute: (...args: any[]) => Promise<void> | void;
 
     // Will be removed in v2.0.0 in favor of filter modules
     protected readonly filter?: (...args: any[]) => Promise<boolean> | boolean;
-    protected readonly filterCallback?: (...args: any[]) => void;
+    protected readonly filterCallback?: (...args: any[]) => Promise<void> | void;
 
     readonly filepath: string;
     readonly filename: string;
@@ -57,8 +57,33 @@ export default abstract class BaseModule<
      * client.on(eventName, module.listener);
      */
     async listener(...args: P): Promise<void> {
-        if (await this.passesFilterIfExists(...args)) this.execute(...args);
-        else this.callFilterCallbackIfExists(...args);
+        // Wrap the needed calls so as to not repeat the same code twice
+        const run = async () => {
+            if (await this.passesFilterIfExists(...args))
+                await this.execute(...args);
+            else await this.callFilterCallbackIfExists(...args);
+        };
+
+        // If there are no catch modules or if none of the existing catch modules
+        // can be applied to this module, then do not use try/catch.
+        const moduleDirpath = path.dirname(this.filepath);
+        const hasCatchers = [...this.manager.catchers.keys()]
+            .some(key => moduleDirpath.includes(path.dirname(key)));
+
+        if (hasCatchers) await run()
+            .catch(error => this.handleError(error, ...args));
+        else await run();
+    }
+
+    private handleError(error: unknown, ...args: P): void {
+        const moduleDirpath = path.dirname(this.filepath);
+
+        for (const [filepath, catcherModule] of this.manager.catchers) {
+            const catchDirpath = path.dirname(filepath);
+            if (!moduleDirpath.includes(catchDirpath)) continue;
+            // @ts-expect-error - For some reason the type for catchModule is messed up, so it doesn't want to accept args.
+            catcherModule(error, ...args);
+        }
     }
 
     /**

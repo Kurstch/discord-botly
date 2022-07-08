@@ -92,6 +92,12 @@ export type CommandData = SlashCommandBuilder | SlashCommandOptionsOnlyBuilder |
 export type FilterFunction<T extends ModuleTypes> = (...args: FuncParams<T>) => boolean | Promise<boolean>;
 
 /**
+ * Type for catch module's default exported function.
+ * For more info see see README#catch-modules, [issue#44](https://github.com/Kurstch/discord-botly/issues/44)
+ */
+export type CatchFunction<T extends ModuleTypes> = (error: Error, ...args: FuncParams<T>) => void | Promise<void>;
+
+/**
  * Module code structure
  */
 export type BotlyModule<T extends ModuleTypes> =
