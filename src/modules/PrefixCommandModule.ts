@@ -20,18 +20,6 @@ export default class PrefixCommandModule extends BaseModule<Message, PrefixComma
         this.validateCommandData();
     }
 
-    async listener(message: Message): Promise<void> {
-        const args = message.content
-            .trim()
-            .split(' ')
-            .slice(1)
-            .filter(s => !!s.length);
-
-        if (await this.passesFilterIfExists(message, args))
-            this.execute(message, args);
-        else this.callFilterCallbackIfExists(message, args);
-    }
-
     matches(message: Message, prefix: string): boolean {
         const first = message.content.trimStart().split(' ')[0];
         const cmd = first.trim().substring(prefix.length);

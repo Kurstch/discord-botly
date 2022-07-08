@@ -48,7 +48,7 @@ describe('Testing PrefixCommandModuleManager', () => {
         await callback(message)
 
         expect(listenerSpy).toHaveBeenCalledTimes(1);
-        expect(listenerSpy).toHaveBeenCalledWith(message);
+        expect(listenerSpy).toHaveBeenCalledWith(message, []);
     });
 
     it('should create module', () => {

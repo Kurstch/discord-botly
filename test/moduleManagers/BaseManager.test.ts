@@ -25,7 +25,7 @@ describe('Testing BaseManager', () => {
         const res: any[] = readDirSpy.mock.results[0].value;
 
         expect(readDirSpy).toHaveBeenCalledTimes(1); // Reads subdirectories recursively
-        expect(res).toHaveLength(4);
+        expect(res).toHaveLength(6);
         expect(res.find(p => path.basename(p) == 'ping.js')).toBeTruthy();
         expect(res.find(p => path.basename(p) == 'ban.js')).toBeTruthy();
     });
@@ -68,10 +68,16 @@ describe('Testing BaseManager', () => {
             expect(manager.filters.size).toBe(2);
             expect(manager.filters.first()).toBeInstanceOf(Function);
         });
+
+        it('should add 2 catchers to `this.catchers`', () => {
+            const manager = createManager();
+            expect(manager.catchers.size).toBe(2);
+            expect(manager.catchers.first()).toBeInstanceOf(Function);
+        });
     });
 
-    describe('Testing validateFilterModule method', () => {
-        const spy = jest.spyOn(DummyBaseManager.prototype as any, 'validateFilterModule');
+    describe('Testing validateUtilModule method', () => {
+        const spy = jest.spyOn(DummyBaseManager.prototype as any, 'validateUtilModule');
         const impl = spy.getMockImplementation()!;
         const filepath = 'test';
 

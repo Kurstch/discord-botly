@@ -49,12 +49,6 @@ export default class DynamicIdModule extends BaseModule<T, DynamicIdModuleManage
         return params;
     }
 
-    async listener(interaction: T, params: { [key: string]: string; }): Promise<void> {
-        if (await this.passesFilterIfExists(interaction as ButtonInteraction, params))
-            this.execute(interaction, params);
-        else this.callFilterCallbackIfExists(interaction as ButtonInteraction, params);
-    }
-
     private validateId(): void {
         if (this.params && new Set(this.params).size !== this.params.length)
             throw new Error(`${this.filename}: every parameter in id must have a unique name`);

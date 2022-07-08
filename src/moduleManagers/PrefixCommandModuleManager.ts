@@ -15,7 +15,15 @@ export default class PrefixCommandModuleManager extends BaseManager<Message, Pre
         this.client.on('messageCreate', async message => {
             const prefix = await this.getPrefix(message);
             const module = this.modules.find(module => module.matches(message, prefix));
-            if (module) module.listener(message);
+            if (module) {
+                const args = message.content
+                    .trim()
+                    .split(' ')
+                    .slice(1)
+                    .filter(s => !!s.length);
+
+                module.listener(message, args);
+            }
         });
     }
 

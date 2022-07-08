@@ -1,6 +1,7 @@
 import { Collection } from 'discord.js';
-import type { FilterFunction } from '../../typings';
+import type { CatchFunction, FilterFunction } from '../../typings';
 
 export default {
-    filters: new Collection<string, FilterFunction<any>>()
+    filters: new Collection<string, FilterFunction<any>>(),
+    catchers: new Collection<string, CatchFunction<any>>()
 };

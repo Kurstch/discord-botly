@@ -2,7 +2,7 @@ import path from 'path';
 import walkdir from 'walkdir';
 import { Collection } from 'discord.js';
 import type { Client } from 'discord.js';
-import type { FilterFunction, BotlyModule, ModuleTypes } from '../../typings';
+import type { FilterFunction, BotlyModule, ModuleTypes, CatchFunction } from '../../typings';
 import type DynamicIdModule from '../modules/DynamicIdModule';
 import type PrefixCommandModule from '../modules/PrefixCommandModule';
 import type SlashCommandModule from '../modules/SlashCommandModule';
@@ -27,6 +27,7 @@ export default abstract class BaseManager<
     client: Client;
     modules: M[] = [];
     filters = new Collection<string, FilterFunction<T>>();
+    catchers = new Collection<string, CatchFunction<T>>();
     dir: string;
 
     constructor(client: Client, dir: string) {
@@ -55,17 +56,21 @@ export default abstract class BaseManager<
             const basename = path.basename(filepath);
             const isRegularModule = !basename.startsWith('__');
             const isFilter = basename.startsWith('__filter');
+            const isCatcher = basename.startsWith('__catch');
 
             if (isRegularModule)
                 this.modules.push(this.createModule(filepath, module));
             else if (isFilter) {
-                this.validateFilterModule(filepath, module);
+                this.validateUtilModule(filepath, module);
                 this.filters.set(filepath, module.default);
+            } else if (isCatcher) {
+                this.validateUtilModule(filepath, module);
+                this.catchers.set(filepath, module.default);
             }
         }
     }
 
-    private validateFilterModule(filepath: string, module: { default: FilterFunction<T>; }): void {
+    private validateUtilModule(filepath: string, module: { default: FilterFunction<T>; }): void {
         if (!module.default || typeof module.default !== 'function')
             throw new Error(`${filepath}: default export must be a function`);
     }

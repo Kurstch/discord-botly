@@ -40,6 +40,7 @@ Discord Botly is a Discord Bot framework that wraps the [Discord.js](https://git
     - Methods for registering slash commands (so you don't have to mess around with the Discord API)
     - For `ButtonInteraction` and `SelectMenuInteraction` you can use [Dynamic parameter ids](#dynamic-parameter-ids)
     - You can make [filter modules](#filter-modules), which are filters that automatically get applied to [Botly Modules](#botlymodules)
+    - You can make [catch modules](#catch-modules), which are functions that automatically catch all errors thrown from [Botly Modules](#botlymodules)
     - Prefix command data is automatically gathered into one constant so you don't have to write help command manually,
       see [prefixCommandData](#prefix-command-data)
 
@@ -48,6 +49,7 @@ The project code may look something like this:
 ```txt
 .
 |-commands
+|   |-__catch.ts
 |   |-ping.ts
 |   |-balance.ts
 |   └─admin
@@ -68,6 +70,7 @@ The project code may look something like this:
 |   └─give-[userId]-role.ts
 |
 |-prefixCommands
+|   |-__catch.ts
 |   |-__filter.ts
 |   |-ping.ts
 |   └─help.ts
@@ -303,6 +306,68 @@ The above example for `prefixCommands/admin/__filter.ts` would check whether
 the message author is an admin the guild and return true or false appropriately.
 This filter would be applied to all commands in the `admin` directory and
 any sub-directories.
+
+### Catch modules
+
+Catch modules allow you to easily handle errors for multiple [botly modules](#botlymodules)
+as well as [filter modules](#filter-modules).
+
+Just like with [filter modules](#filter-modules) catch modules are files with
+the name `__catch.(js/ts)` that export a default function.
+
+Whenever an error is thrown in any relevant [botly module](#botlymodules) or [filter module](#filter-modules),
+it gets sent to the catch module.
+
+```ts
+import UserInputError from '../errors/UserInputError'
+import type { CommandInteraction } from 'discord.js'
+import type { CatchFunction } from 'discord-botly'
+
+const catcher: CatchFunction<CommandInteraction> = async (error, interaction) => {
+    if (error instanceof UserInputError)
+        await interaction.reply({ ephemeral: true, content: error.message })
+    else {
+        await interaction.reply({ ephemeral: true, content: 'Oops, something has gone wrong...' })
+        console.error(error.message)
+    }
+}
+
+export default catcher
+```
+
+Catch modules get applied to the directory they are in and it's sub-directories
+(same as [filter modules](#filter-modules)).
+
+```txt
+commands
+    |-admin
+    |   | __catch.ts
+    |   |-ban.ts
+    |   └─kick.ts
+    |
+    |-__catch.ts
+    └─ping.ts
+```
+
+In the above example we have 2 catch modules:
+
+- `commands/__catch.ts`
+- `commands/admin/__catch.ts`
+
+`commands/__catch.ts` will catch all errors thrown in the `commands` directory
+and it's sub-directories. While `commands/admin/__catch.ts` will only catch
+errors in the `admin` directory.
+
+> IMPORTANT: You may encounter that sometimes an error is not caught.
+> This in **not** an issue with discord-botly, but rather a problem with Node.js.
+>
+> See how to avoid it in [code-samples](code-samples.md#making-sure-that-async-errors-can-be-caught)
+>
+> For more details, check out these articles:
+>
+> - [Why asynchronous exceptions are uncatchable with callbacks](https://bytearcher.com/articles/why-asynchronous-exceptions-are-uncatchable/)
+> - [Error handling with Async/Await in JS](https://blog.segersian.com/2019/04/17/error-handling-async-await/)
+> - [await vs return vs return await](https://jakearchibald.com/2017/await-vs-return-vs-return-await/)
 
 ### Utils
 

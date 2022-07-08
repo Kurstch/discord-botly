@@ -122,7 +122,70 @@ export default async function(message: Message): Promise<boolean> {
 import type { Message } from 'discord.js';
 import type { FilterFunction } from 'discord-botly';
 
-const filter: FinterFunction<Message> = async message => {}
+const filter: FilterFunction<Message> = async message => {}
+```
+
+## Catchers
+
+```ts
+// prefixCommands/__catch.ts
+
+import UserInputError from '../../errors/UserInputError'
+import type { Message } from 'discord.js'
+import type { CatchFunction } from 'discord-botly'
+
+const catcher: CatchFunction<Message> = async (error, message) => {
+    if (error instanceof UserInputError) {
+        await message.reply(error.message)
+    } else {
+        await message.reply('Oops, something has gone wrong...')
+        console.error(error)
+    }
+}
+
+export default catcher
+```
+
+### Making sure that async errors can be caught
+
+Due to an issue with Node.js, rejected promises cannot
+be caught if they are not returned or awaited.
+
+For more details, check out these articles:
+
+- [Why asynchronous exceptions are uncatchable with callbacks](https://bytearcher.com/articles/why-asynchronous-exceptions-are-uncatchable/)
+- [Error handling with Async/Await in JS](https://blog.segersian.com/2019/04/17/error-handling-async-await/)
+- [await vs return vs return await](https://jakearchibald.com/2017/await-vs-return-vs-return-await/)
+
+In these examples we call `message.reply({})` which throws an error
+as you cannot send an empty message.
+
+This applies to all [botly modules](README.md#botlymodules) and [filter modules](README.md#filter-modules)
+
+```ts
+// The errors thrown here will NOT be caught, because the promise is not returned or awaited
+
+export function execute(message: Message) {
+    message.reply({})
+}
+
+export async function execute(message: Message) {
+    message.reply({})
+}
+```
+
+```ts
+// The errors thrown here will be caught, because the promise is returned or awaited
+
+export const execute = (message: Message) => message.reply({})
+
+export function execute(message: Message) {
+    return message.reply({})
+}
+
+export async function execute(message: Message) {
+    await message.reply({})
+}
 ```
 
 ## Using PrefixCommandData
