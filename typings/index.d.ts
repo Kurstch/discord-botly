@@ -107,10 +107,6 @@ export type BotlyModule<T extends ModuleTypes> =
 
 interface BotlyModuleCoreFunctions<T extends ModuleTypes> {
     execute: (...args: FuncParams<T>) => void;
-    /** @deprecated Will be removed in v2.0.0 in favor of filter modules (see README#filter-modules, [issue#42](https://github.com/Kurstch/discord-botly/issues/42)) */
-    filter?: (...args: FuncParams<T>) => boolean | Promise<boolean>;
-    /** @deprecated Will be removed in v2.0.0 in favor of filter modules (see README#filter-modules, [issue#42](https://github.com/Kurstch/discord-botly/issues/42)) */
-    filterCallback?: (...args: FuncParams<T>) => void;
 }
 
 interface SlashCommandModule {
@@ -155,16 +151,3 @@ export interface IdStore {
 export type ModuleData<T extends ModuleTypes> =
     T extends SelectMenuInteraction | ButtonInteraction ? BotlyModule<T> & IdStore
     : BotlyModule<T>
-
-/** @deprecated */
-export type CommandCallback = (interaction: CommandInteraction) => void;
-/** @deprecated */
-export type CommandFilter = (interaction: CommandInteraction) => boolean | Promise<boolean>;
-/** @deprecated */
-export type EventCallback<T extends keyof ClientEvents> = (...args: ClientEvents[T]) => void;
-/** @deprecated */
-export type EventFilter<T extends keyof ClientEvents> = (...args: ClientEvents[T]) => boolean | Promise<boolean>;
-/** @deprecated */
-export type SelectMenuOrButtonCallback<T extends SelectMenuInteraction | ButtonInteraction> = (Interaction: T, params: { [key: string]: string; }) => void;
-/** @deprecated */
-export type SelectMenuOrButtonFilter<T extends SelectMenuInteraction | ButtonInteraction> = (Interaction: T, params: { [key: string]: string; }) => boolean | Promise<boolean>;

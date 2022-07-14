@@ -21,11 +21,6 @@ export default abstract class BaseModule<
     // no idea why ¯\_(ツ)_/¯
     /* eslint-disable @typescript-eslint/no-explicit-any */
     protected readonly execute: (...args: any[]) => Promise<void> | void;
-
-    // Will be removed in v2.0.0 in favor of filter modules
-    protected readonly filter?: (...args: any[]) => Promise<boolean> | boolean;
-    protected readonly filterCallback?: (...args: any[]) => Promise<void> | void;
-
     readonly filepath: string;
     readonly filename: string;
     readonly filenameWithoutExt: string;
@@ -34,11 +29,6 @@ export default abstract class BaseModule<
 
     constructor(manager: M, filepath: string, file: BotlyModule<T>) {
         this.execute = file.execute;
-
-        // Will be removed in v2.0.0 in favor of filter modules
-        this.filter = file.filter;
-        this.filterCallback = file.filterCallback;
-
         this.filepath = filepath;
         this.filename = path.basename(filepath);
         this.filenameWithoutExt = this.filename.split('.js')[0];
@@ -61,7 +51,6 @@ export default abstract class BaseModule<
         const run = async () => {
             if (await this.passesFilterIfExists(...args))
                 await this.execute(...args);
-            else await this.callFilterCallbackIfExists(...args);
         };
 
         // If there are no catch modules or if none of the existing catch modules
@@ -111,26 +100,12 @@ export default abstract class BaseModule<
             else return false;
         }
 
-        // Will be removed in v2.0.0 in favor of filter modules
-        if (this.filter) return this.filter(...args);
-
         return true;
-    }
-
-    protected async callFilterCallbackIfExists(...args: P): Promise<void> {
-        if (!this.filterCallback) return;
-        this.filterCallback(...args);
     }
 
     private validate(): void {
         if (typeof this.execute !== 'function')
             throw new Error(`${this.filename}: exports.execute must be a function`);
-
-        // Will be removed in v2.0.0 in favor of filter modules
-        if (this.filter && typeof this.filter !== 'function')
-            throw new Error(`${this.filename}: exports.filter must be undefined or a function`);
-        if (this.filterCallback && typeof this.filterCallback !== 'function')
-            throw new Error(`${this.filename} exports.filterCallback must be undefined or a function`);
     }
 
     /**
