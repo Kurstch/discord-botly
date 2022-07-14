@@ -6,7 +6,7 @@ import type { BotlyModule } from '../../typings';
 type T = ButtonInteraction | SelectMenuInteraction;
 
 export default class DynamicIdModuleManager extends BaseManager<T, DynamicIdModule> {
-    addListener(): void {
+    protected addListener(): void {
         this.client.on('interactionCreate', interaction => {
             if (!interaction.isButton() && !interaction.isSelectMenu()) return;
             const module = this.modules.find(module => module.matches(interaction));
@@ -14,7 +14,7 @@ export default class DynamicIdModuleManager extends BaseManager<T, DynamicIdModu
         });
     }
 
-    createModule(filepath: string, module: BotlyModule<T>): DynamicIdModule {
+    protected createModule(filepath: string, module: BotlyModule<T>): DynamicIdModule {
         return new DynamicIdModule(this, filepath, module);
     }
 }

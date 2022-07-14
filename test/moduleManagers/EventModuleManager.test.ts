@@ -4,8 +4,8 @@ import { EventEmitter } from 'events';
 import path from 'path';
 
 const dirPath = path.join(__dirname, '../mock/events');
-const addListenerSpy = jest.spyOn(EventModuleManager.prototype, 'addListener');
-const createModuleSpy = jest.spyOn(EventModuleManager.prototype, 'createModule');
+const addListenerSpy = jest.spyOn(EventModuleManager.prototype as any, 'addListener');
+const createModuleSpy = jest.spyOn(EventModuleManager.prototype as any, 'createModule');
 const listenerSpy = jest.spyOn(EventModule.prototype, 'listener');
 
 function createManager() {
