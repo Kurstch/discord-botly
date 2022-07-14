@@ -1,8 +1,5 @@
 import type {
-    Client,
-    Interaction,
     ClientEvents,
-    MessageReaction,
     ButtonInteraction,
     CommandInteraction,
     SelectMenuInteraction,
@@ -10,12 +7,6 @@ import type {
     ClientOptions
 } from 'discord.js';
 import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from '@discordjs/builders';
-
-import BotlyClient from '../src/BotlyClient';
-
-export {
-    BotlyClient
-};
 
 export type Prefix = string | ((message: Message) => Promise<string> | string)
 
