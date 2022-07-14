@@ -6,38 +6,25 @@ import type {
     ButtonInteraction,
     CommandInteraction,
     SelectMenuInteraction,
-    Message
+    Message,
+    ClientOptions
 } from 'discord.js';
-import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from '@discordjs/builders'
+import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from '@discordjs/builders';
 
-/**
- * Initializes botly
- */
-export function init(args: InitArgs): void;
+import BotlyClient from '../src/BotlyClient';
 
-/**
- * Registers all slash commands for every guild the bot is in globally.
- *
- * Recommended to run on the client 'ready' event.
- */
-export async function registerGlobalSlashCommands(client: Client<true>): Promise<void>;
-
-export function prefixCommandData(): PrefixCommandData[];
-
-export default {
-    init,
-    registerGlobalSlashCommands,
-}
+export {
+    BotlyClient
+};
 
 export type Prefix = string | ((message: Message) => Promise<string> | string)
 
-export interface InitArgs {
-    /**
-     * The Discord client
-     */
-    client: Client;
+export interface InitArgs extends ClientOptions {
     /**
      * The prefix used for prefix commands.
+     *
+     * @default "!"
+     *
      * @example "!"
      * @example ```ts
      * (guild) => database.settings.getPrefix(guild.id)

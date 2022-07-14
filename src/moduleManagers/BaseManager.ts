@@ -28,15 +28,17 @@ export default abstract class BaseManager<
     modules: M[] = [];
     filters = new Collection<string, FilterFunction<T>>();
     catchers = new Collection<string, CatchFunction<T>>();
-    dir: string;
+    dir?: string;
 
-    constructor(client: Client, dir: string) {
+    constructor(client: Client, dir?: string) {
         this.client = client;
         this.dir = dir;
 
-        this.importModules();
-        this.addListener();
-        this.logResults();
+        if (this.dir) {
+            this.importModules();
+            this.addListener();
+            this.logResults();
+        }
     }
 
     private readDir(dir: string): string[] {
@@ -48,7 +50,9 @@ export default abstract class BaseManager<
      * Imports all modules from `this.dir` as modules/filters
      */
     private importModules(): void {
-        const files = this.readDir(this.dir);
+        // This method will only run if this.dir is defined, so we can safely disable the eslint warning
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const files = this.readDir(this.dir!);
 
         for (const filepath of files) {
             // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -90,7 +94,7 @@ export default abstract class BaseManager<
      * This method is abstract since the event depends on context
      * (ie. 'messageCreate' for prefix commands and 'interactionCreate' for slashCommands).
      */
-    abstract addListener(): void;
+    protected abstract addListener(): void;
 
     /**
      * Creates a Module class for the given file.
@@ -99,5 +103,5 @@ export default abstract class BaseManager<
      * (ie. EventModule/SlashCommandModule etc.)
      * which can take different parameters.
      */
-    abstract createModule(filepath: string, module: BotlyModule<T>): M;
+    protected abstract createModule(filepath: string, module: BotlyModule<T>): M;
 }

@@ -6,12 +6,12 @@ import type { BotlyModule, Prefix, PrefixCommandData } from '../../typings';
 export default class PrefixCommandModuleManager extends BaseManager<Message, PrefixCommandModule> {
     prefix: Prefix;
 
-    constructor(prefix: Prefix, client: Client, dir: string) {
+    constructor(client: Client, dir?: string, prefix?: Prefix) {
         super(client, dir);
-        this.prefix = prefix;
+        this.prefix = prefix ?? '!';
     }
 
-    addListener(): void {
+    protected addListener(): void {
         this.client.on('messageCreate', async message => {
             const prefix = await this.getPrefix(message);
             const module = this.modules.find(module => module.matches(message, prefix));
@@ -27,7 +27,7 @@ export default class PrefixCommandModuleManager extends BaseManager<Message, Pre
         });
     }
 
-    createModule(filepath: string, module: BotlyModule<Message>): PrefixCommandModule {
+    protected createModule(filepath: string, module: BotlyModule<Message>): PrefixCommandModule {
         return new PrefixCommandModule(this, filepath, module);
     }
 

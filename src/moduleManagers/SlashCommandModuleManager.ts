@@ -6,7 +6,7 @@ import type { CommandInteraction } from 'discord.js';
 import type { BotlyModule } from '../../typings';
 
 export default class SlashCommandModuleManager extends BaseManager<CommandInteraction, SlashCommandModule> {
-    addListener(): void {
+    protected addListener(): void {
         this.client.on('interactionCreate', interaction => {
             if (!interaction.isCommand()) return;
             const module = this.modules.find(module => module.matches(interaction));
@@ -14,20 +14,20 @@ export default class SlashCommandModuleManager extends BaseManager<CommandIntera
         });
     }
 
-    createModule(filepath: string, module: BotlyModule<CommandInteraction>): SlashCommandModule {
+    protected createModule(filepath: string, module: BotlyModule<CommandInteraction>): SlashCommandModule {
         return new SlashCommandModule(this, module.commandData, filepath, module);
     }
 
     /**
      * Registers all slash commands for every guild the bot is in.
      */
-    registerGlobalCommands(): void {
+    async registerGlobalCommands(): Promise<void> {
         if (!this.client.isReady()) throw new Error('Client is not logged in');
         const rest = new REST({ version: '9' }).setToken(this.client.token);
 
         for (const [_, guild] of this.client.guilds.cache) {
             try {
-                rest.put(
+                await rest.put(
                     Routes.applicationGuildCommands(this.client.user.id, guild.id),
                     { body: this.modules.map(module => module.commandData.toJSON()) }
                 );

@@ -194,7 +194,8 @@ export async function execute(message: Message) {
 // prefixCommands/help.ts
 
 import { Message, MessageEmbed } from 'discord.js'
-import { BotlyModule, PrefixCommandData, prefixCommandData } from 'discord-botly'
+import { BotlyModule, PrefixCommandData } from 'discord-botly'
+import client from '../index'
 
 function commandToDescription(command: PrefixCommandData): string {
     const descriptionStr = command.description ? ` - ${command.description}` : ''
@@ -208,7 +209,7 @@ export const { execute, description, syntax }: BotlyModule<Message> = {
     syntax: 'help <category>',
 
     async execute(message, args) {
-        const commands = prefixCommandData()
+        const commands = client.prefixCommandManager.commandData
         const [category] = args
         const embed = new MessageEmbed()
 

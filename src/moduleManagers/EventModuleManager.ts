@@ -4,7 +4,7 @@ import type { ClientEvents } from 'discord.js';
 import type { BotlyModule, FuncParams } from '../../typings';
 
 export default class EventModuleManager<T extends keyof ClientEvents = keyof ClientEvents> extends BaseManager<keyof ClientEvents, EventModule<T>> {
-    addListener(): void {
+    protected addListener(): void {
         // Since each event module if for a different event,
         // loop through them and add listeners individually
         for (const module of this.modules) {
@@ -14,7 +14,7 @@ export default class EventModuleManager<T extends keyof ClientEvents = keyof Cli
         }
     }
 
-    createModule(filepath: string, module: BotlyModule<T>): EventModule<T> {
+    protected createModule(filepath: string, module: BotlyModule<T>): EventModule<T> {
         return new EventModule(this, filepath, module);
     }
 }

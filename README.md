@@ -95,24 +95,22 @@ you can view [Dual Bot](https://github.com/Kurstch/DualBot).
 
 ### Initialization
 
+For convenience sake, the main interface for Discord Botly is a class
+that extends the Discord.js Client.
+
 ```ts
 import { Client, Intents } from 'discord.js'
-import botly from 'discord-botly'
+import { BotlyClient } from 'discord-botly'
 import path from 'path'
 import 'dotenv/config' // Load .env
 
-// Initialize the Discord client
-const client = new Client({
+// Initialize the Discord-botly client
+const client = new BotlyClient({
     intents: [
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGES,
         Intents.FLAGS.GUILD_MEMBERS,
     ],
-});
-
-// Initialize discord-botly
-botly.init({
-    client,
     prefix: '!', // Optional
     eventsDir: path.join(__dirname, './events'), // Optional
     commandsDir: path.join(__dirname, './commands'), // Optional
@@ -122,9 +120,12 @@ botly.init({
 });
 
 client.login(process.env.TOKEN);
+
+export default client;
 ```
 
-The init method provides Botly the client and points to where the modules are located.
+The `BotlyClient` class takes the regular [Discord.js Client options](https://discord.js.org/#/docs/discord.js/stable/typedef/ClientOptions)
+along with its own options:
 
 | field                         | value              | description                                                                                                                         |
 | ----------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -142,8 +143,7 @@ for different guilds, then you can give a function to the `prefix` field in init
 The function can be either synchronous or asynchronous, and must return a `string`.
 
 ```ts
-botly.init({
-    client,
+new BotlyClient({
     prefix: (message) => database.settings.getPrefix(message.guild.id),
     prefixCommandDir: path.join(__dirname, './prefixCommands')
 });
@@ -380,12 +380,12 @@ It required the client to be logged in, so call it on the `ready` event
 
 ```ts
 // events/ready.ts
-import { registerGlobalSlashCommands } from 'discord-botly' 
+import client from '../index' 
 import type { BotlyModule } from 'discord-botly'
 
 export const { execute }: BotlyModule<'ready'> = {
-    execute: client => {
-        registerGlobalSlashCommands(client)
+    execute: async client => {
+        await client.slashCommandManager.registerGlobalCommands()
     }
 }
 ```
@@ -399,9 +399,9 @@ in one easy-to-access place.
 For an example on how `prefixCommandData` can be used, see [code-samples](code-samples.md#using-prefixcommanddata)
 
 ```ts
-import { prefixCommandData } from 'discord-botly'
+import client from '../index'
 
-console.log(prefixCommandData())
+console.log(client.prefixCommandManager.commandData)
 /*
     Logs: [
         { name: 'help', description: 'See available commands', syntax: 'help', category: undefined, aliases: ['h'] },

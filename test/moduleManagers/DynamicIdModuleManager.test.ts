@@ -13,8 +13,8 @@ function createManager() {
     );
 }
 
-const addListenerSpy = jest.spyOn(DynamicIdModuleManager.prototype, 'addListener');
-const createModuleSpy = jest.spyOn(DynamicIdModuleManager.prototype, 'createModule');
+const addListenerSpy = jest.spyOn(DynamicIdModuleManager.prototype as any, 'addListener');
+const createModuleSpy = jest.spyOn(DynamicIdModuleManager.prototype as any, 'createModule');
 const matchesSpy = jest.spyOn(DynamicIdModule.prototype, 'matches');
 const listenerSpy = jest.spyOn(DynamicIdModule.prototype, 'listener');
 const fakeInteraction = {

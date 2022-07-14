@@ -6,16 +6,16 @@ import type { Prefix } from '../../typings';
 import type { Message } from 'discord.js';
 
 const dirPath = path.join(__dirname, '../mock/prefixCommands');
-const createModuleSpy = jest.spyOn(PrefixCommandModuleManager.prototype, 'createModule');
-const addListenerSpy = jest.spyOn(PrefixCommandModuleManager.prototype, 'addListener');
+const createModuleSpy = jest.spyOn(PrefixCommandModuleManager.prototype as any, 'createModule');
+const addListenerSpy = jest.spyOn(PrefixCommandModuleManager.prototype as any, 'addListener');
 const listenerSpy = jest.spyOn(PrefixCommandModule.prototype, 'listener');
 const matchSpy = jest.spyOn(PrefixCommandModule.prototype, 'matches');
 
 function createManager(prefix?: Prefix) {
     return new PrefixCommandModuleManager(
-        prefix ?? '!',
         new EventEmitter() as any,
-        dirPath
+        dirPath,
+        prefix,
     );
 }
 
