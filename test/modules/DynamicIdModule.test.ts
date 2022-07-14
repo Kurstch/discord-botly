@@ -40,30 +40,6 @@ describe('Testing DynamicIdModule', () => {
         });
     });
 
-    describe('Testing listener method', () => {
-        it('should call execute method', async () => {
-            const callback = jest.fn();
-            const module = new DynamicIdModule(dm, 'test.js', {
-                execute: callback,
-            });
-
-            await module.listener({} as any, {});
-            expect(callback).toHaveBeenCalled();
-        });
-
-        it('should call callFilterCallbackIfExists', async () => {
-            const callback = jest.fn();
-            const module = new DynamicIdModule(dm, 'test.js', {
-                execute: () => { },
-                filter: () => false,
-                filterCallback: callback,
-            });
-
-            await module.listener({} as any, {});
-            expect(callback).toHaveBeenCalled();
-        });
-    });
-
     describe('Testing validateId method', () => {
         it('should pass validation', () => {
             expect(
